@@ -1,59 +1,123 @@
-# PdfMerger
+﻿# PDF Merger
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.0.4.
+A browser-based PDF merge tool built with Angular. It supports importing images and PDFs, reordering files and pages, rotating/removing pages, previewing output, and exporting one merged PDF.
 
-## Development server
+## Credits
+- App implementation and engineering support: **OpenAI Codex (GPT-5)**
+- Built and customized in collaboration with the project owner.
 
-To start a local development server, run:
+## Features
+- Import `PDF`, `JPG`, `JPEG`, `PNG`, `WEBP`
+- Drag-and-drop import
+- File-level reorder (before page expansion)
+- Page-level reorder across all imported files
+- Page rotation and page removal
+- Export settings:
+  - file name
+  - paper size (including common presets)
+  - image quality
+- Preview support:
+  - file previews
+  - page previews
+  - export print preview (quick and full mode)
+- Light/dark theme toggle
 
-```bash
-ng serve
-```
+## Tech Stack
+- Angular 21 (standalone components)
+- Tailwind CSS v4 (CSS token-based theming)
+- `pdf-lib` (composition/export)
+- `pdfjs-dist` (preview rendering)
+- `@angular/cdk` (drag/drop)
+- `@ng-icons` + Lucide icons
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+## Requirements
+- Node.js 20+ (Node 22 recommended)
+- npm
 
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+## Local Development
+Install dependencies:
 
 ```bash
-ng test
+npm install
 ```
 
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
+Run dev server:
 
 ```bash
-ng e2e
+npm start
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+Open:
 
-## Additional Resources
+```text
+http://localhost:4200/
+```
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+## Build
+Production build:
+
+```bash
+npm run build
+```
+
+Output directory:
+
+```text
+dist/pdf-merger/browser
+```
+
+## Tests
+Run unit tests:
+
+```bash
+npm test
+```
+
+## GitHub Pages Deployment
+This repo includes GitHub Actions workflow:
+
+```text
+.github/workflows/deploy-pages.yml
+```
+
+### Current deployment setup
+- Trigger branch: `master`
+- Workflow builds with repository-aware base href:
+  - `--base-href "/<repo-name>/"`
+- Uploads `dist/pdf-merger/browser` as Pages artifact
+- Adds SPA fallback (`404.html`) for Angular routing
+
+### One-time GitHub configuration
+1. Go to `Settings > Pages`.
+2. Set source to `GitHub Actions`.
+3. Push to `master` (or run workflow manually).
+
+## PDF Worker on GitHub Pages
+To avoid worker 404 errors in subpath deployments:
+- Worker file is copied into build assets via `angular.json`
+- App resolves worker URL via app base URI in:
+  - `src/app/core/services/pdf-preview/pdf-preview.ts`
+
+Expected deployed worker path:
+
+```text
+/assets/pdf.worker.min.mjs
+```
+
+## Known Build Warnings
+You may see warnings during build:
+- Initial bundle size budget exceeded
+- `pako` is CommonJS (via `pdf-lib`)
+
+These are currently non-blocking for deployment.
+
+## Project Structure (High-Level)
+- `src/app/features/import` - file intake and validation
+- `src/app/features/files` - file reorder step
+- `src/app/features/pages` - page management step
+- `src/app/features/export` - export options and merged preview
+- `src/app/core/services` - import/edit/preview/composition logic
+- `src/styles.css` - Tailwind v4 + theme tokens
+
+## License
+No license file is currently included. Add one if you plan to distribute publicly.
