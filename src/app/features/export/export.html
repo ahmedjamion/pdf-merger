@@ -1,0 +1,148 @@
+﻿<section class="mx-auto flex w-full max-w-4xl flex-col gap-6">
+  <header class="space-y-2">
+    <p class="text-sm font-semibold uppercase tracking-wide text-app-muted">Step 4 of 4</p>
+    <h1 class="text-3xl font-bold text-app-fg">Export merged PDF</h1>
+    <p class="max-w-3xl text-sm text-app-muted">
+      Choose your output options and export one merged PDF. Original page size preserves each source page exactly.
+      Standard paper options will fit each page into your selected format.
+    </p>
+  </header>
+
+  <div class="space-y-4 rounded-2xl border border-app-border bg-app-surface p-4">
+    <label class="block space-y-1">
+      <span class="text-sm font-medium text-app-muted">File name</span>
+      <input
+        type="text"
+        class="w-full rounded-lg border border-app-border bg-app-surface px-3 py-2 text-sm text-app-fg placeholder:text-app-subtle"
+        [ngModel]="exportOptions().fileName"
+        (ngModelChange)="onFileNameChange($event)"
+        placeholder="merged-document"
+      />
+      <span class="text-sm text-app-muted">The exported file will be saved as .pdf automatically.</span>
+    </label>
+
+    <label class="block space-y-1">
+      <span class="text-sm font-medium text-app-muted">Page size</span>
+      <select
+        class="w-full rounded-lg border border-app-border bg-app-surface px-3 py-2 text-sm text-app-fg"
+        [ngModel]="exportOptions().pageSize"
+        (ngModelChange)="onPageSizeChange($event)"
+      >
+        <option value="original">Original (source size)</option>
+        <option value="a3">A3 (297 x 420 mm)</option>
+        <option value="a4">A4 (210 x 297 mm)</option>
+        <option value="a5">A5 (148 x 210 mm)</option>
+        <option value="letter">Letter (8.5 x 11 in)</option>
+        <option value="legal">Legal (8.5 x 14 in)</option>
+        <option value="folio">Folio (8.5 x 13 in)</option>
+        <option value="tabloid">Tabloid (11 x 17 in)</option>
+        <option value="executive">Executive (7.25 x 10.5 in)</option>
+        <option value="b5">B5 (176 x 250 mm)</option>
+      </select>
+    </label>
+
+    <label class="block space-y-1">
+      <span class="text-sm font-medium text-app-muted">Image quality</span>
+      <select
+        class="w-full rounded-lg border border-app-border bg-app-surface px-3 py-2 text-sm text-app-fg"
+        [ngModel]="exportOptions().quality"
+        (ngModelChange)="onQualityChange($event)"
+      >
+        <option value="high">High (best detail, larger file)</option>
+        <option value="medium">Medium (balanced)</option>
+        <option value="low">Low (smaller file, lower detail)</option>
+      </select>
+      <span class="text-sm text-app-muted">Quality affects image pages only.</span>
+    </label>
+  </div>
+
+  <section class="rounded-2xl border border-app-border bg-app-surface p-4">
+    <div class="mb-3 flex flex-wrap items-center justify-between gap-2">
+      <h2 class="text-sm font-semibold text-app-fg">Print Preview</h2>
+      <div class="inline-flex rounded-lg border border-app-border p-1 text-sm">
+        <button
+          type="button"
+          class="rounded-md px-3 py-1"
+          [class.bg-sky-600]="isQuickMode()"
+          [class.text-white]="isQuickMode()"
+          [class.text-app-muted]="!isQuickMode()"
+          (click)="onPreviewModeChange('quick')"
+        >
+          Quick (1 page)
+        </button>
+        <button
+          type="button"
+          class="rounded-md px-3 py-1"
+          [class.bg-sky-600]="isFullMode()"
+          [class.text-white]="isFullMode()"
+          [class.text-app-muted]="!isFullMode()"
+          (click)="onPreviewModeChange('full')"
+        >
+          Full (all pages)
+        </button>
+      </div>
+      <button
+        type="button"
+        class="rounded-md border border-app-border px-3 py-1 text-sm font-medium text-app-muted hover:bg-app-panel"
+        [disabled]="previewLoading()"
+        (click)="refreshPreviewNow()"
+      >
+        {{ previewLoading() ? 'Refreshing...' : isFullMode() ? 'Generate Full Preview' : 'Refresh Preview' }}
+      </button>
+    </div>
+
+    @if (isFullMode() && previewNeedsRefresh() && !previewLoading() && previewUrls().length === 0) {
+      <p class="mb-3 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-700">
+        Full preview renders many pages and can be slower. Click "Generate Full Preview".
+      </p>
+    }
+
+    <div class="min-h-52 rounded-lg border border-app-border bg-app-panel p-3">
+      @if (previewLoading()) {
+        <div class="flex min-h-44 items-center justify-center text-sm text-app-muted">Generating preview...</div>
+      } @else if (previewUrls().length > 0) {
+        @if (isQuickMode()) {
+          <img [src]="previewUrls()[0]" alt="Merged document preview" class="mx-auto max-h-[28rem] w-auto object-contain" />
+        } @else {
+          <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
+            @for (preview of previewUrls(); track preview; let idx = $index) {
+              <div class="rounded-md border border-app-border bg-app-surface p-2">
+                <p class="mb-2 text-sm font-medium text-app-muted">Page {{ idx + 1 }}</p>
+                <img [src]="preview" alt="Merged page preview" class="mx-auto max-h-[24rem] w-auto object-contain" />
+              </div>
+            }
+          </div>
+        }
+      } @else {
+        <div class="flex min-h-44 items-center justify-center text-sm text-app-muted">
+          Preview unavailable. You can still export the final PDF.
+        </div>
+      }
+    </div>
+
+    @if (previewError()) {
+      <p class="mt-2 text-sm text-rose-600">{{ previewError() }}</p>
+    }
+  </section>
+
+  @if (errorMessage()) {
+    <p class="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+      {{ errorMessage() }}
+    </p>
+  }
+
+  <div class="flex items-center justify-between">
+    <a routerLink="/pages" class="text-sm font-medium text-app-muted underline">Back to page manager</a>
+    <button
+      type="button"
+      class="rounded-lg bg-emerald-600 px-5 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:bg-app-border"
+      [disabled]="isExporting() || !documentEditor.hasPages()"
+      (click)="exportPdf()"
+    >
+      {{ isExporting() ? 'Merging...' : 'Export PDF' }}
+    </button>
+  </div>
+</section>
+
+
+

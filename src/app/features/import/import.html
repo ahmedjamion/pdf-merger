@@ -1,0 +1,145 @@
+﻿<section class="mx-auto flex w-full max-w-5xl flex-col gap-6">
+  <header class="space-y-2">
+    <p class="text-sm font-semibold uppercase tracking-wide text-app-muted">Step 1 of 4</p>
+    <h1 class="text-3xl font-bold text-app-fg">Import your files</h1>
+    <p class="max-w-3xl text-sm text-app-muted">
+      Add PDF or image files by dropping them below or using the browse button. We block duplicates,
+      allow up to 10MB per file, 120MB total upload size, and 400 pages total.
+    </p>
+  </header>
+
+  <div
+    class="rounded-2xl border-2 border-dashed p-8 text-center transition"
+    [class.border-sky-500]="isDragging()"
+    [class.bg-sky-50]="isDragging()"
+    [class.border-app-border]="!isDragging()"
+    [class.bg-app-surface]="!isDragging()"
+    (dragover)="onDragOver($event)"
+    (dragleave)="onDragLeave($event)"
+    (drop)="onDrop($event)"
+  >
+    <div class="flex justify-center">
+      <ng-icon name="lucideUpload" class="text-sky-600" size="26" />
+    </div>
+    <p class="mt-2 text-lg font-semibold text-app-fg">Drop files here</p>
+    <p class="mt-1 text-sm text-app-muted">or</p>
+    <label
+      class="mt-4 inline-flex cursor-pointer items-center gap-2 rounded-lg bg-sky-700 px-4 py-2 text-sm font-medium text-white hover:bg-sky-600"
+    >
+      <ng-icon name="lucideFolderOpen" size="16" />
+      Browse files
+      <input
+        type="file"
+        class="hidden"
+        accept=".pdf,.jpg,.jpeg,.png,.webp"
+        multiple
+        (change)="onFileSelected($event)"
+      />
+    </label>
+    <p class="mt-4 text-sm text-app-muted">Supported: PDF, JPG, PNG, WEBP</p>
+  </div>
+
+  @if (isImporting()) {
+    <p class="rounded-xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-700">
+      Processing files and validating page limits...
+    </p>
+  }
+
+  <section class="space-y-3 rounded-2xl border border-app-border bg-app-surface p-4">
+    <div class="flex items-center justify-between">
+      <h2 class="text-lg font-semibold text-app-fg">Accepted files</h2>
+      <p class="text-sm text-app-muted">
+        {{ files().length }} file(s) - {{ totalSize() / 1024 / 1024 | number: '1.0-1' }} MB
+      </p>
+    </div>
+
+    @if (files().length === 0) {
+      <p class="text-sm text-app-muted">No files added yet.</p>
+    } @else {
+      <ul class="grid grid-cols-1 gap-3 md:grid-cols-2">
+        @for (file of files(); track file.id) {
+          <li class="flex aspect-4/3 flex-col rounded-xl border border-app-border p-3">
+            <div
+              class="mb-3 min-h-0 flex-1 overflow-hidden rounded-md border border-app-border bg-app-panel"
+            >
+              @if (isPdf(file.type)) {
+                @if (getPdfFilePreview(file) | async; as preview) {
+                  <img [src]="preview" alt="PDF preview" class="h-full w-full object-contain" />
+                } @else {
+                  <div class="flex h-full items-center justify-center text-sm text-app-muted">
+                    Loading PDF preview...
+                  </div>
+                }
+              } @else {
+                <img
+                  [src]="file.previewUrl"
+                  alt="File preview"
+                  class="h-full w-full object-contain"
+                />
+              }
+            </div>
+
+            <div class="mt-auto flex items-start justify-between gap-2">
+              <div>
+                <p class="line-clamp-1 text-sm font-medium text-app-fg">{{ file.name }}</p>
+                <p class="mt-1 flex items-center gap-1 text-sm text-app-muted">
+                  <ng-icon [name]="isPdf(file.type) ? 'lucideFileText' : 'lucideImage'" size="14" />
+                  {{ file.pageCount }} page(s)
+                </p>
+              </div>
+              <button
+                type="button"
+                class="inline-flex items-center gap-1 rounded-md border border-rose-300 px-2 py-1 text-sm font-medium text-rose-700 hover:bg-rose-50"
+                (click)="removeFile(file.id)"
+              >
+                <ng-icon name="lucideTrash2" size="14" />
+                Remove
+              </button>
+            </div>
+          </li>
+        }
+      </ul>
+    }
+  </section>
+
+  @if (invalidFiles().length > 0) {
+    <section class="space-y-3 rounded-2xl border border-rose-200 bg-rose-50 p-4">
+      <div class="flex items-center justify-between">
+        <h2 class="flex items-center gap-2 text-lg font-semibold text-rose-800">
+          <ng-icon name="lucideCircleAlert" size="18" />
+          Rejected files
+        </h2>
+        <button
+          type="button"
+          class="text-sm font-medium text-rose-700 underline"
+          (click)="clearInvalidFiles()"
+        >
+          Clear list
+        </button>
+      </div>
+
+      <ul class="space-y-2">
+        @for (item of invalidFiles(); track item.id) {
+          <li class="rounded-lg border border-rose-200 bg-app-surface px-3 py-2">
+            <p class="text-sm font-medium text-app-fg">{{ item.name }}</p>
+            <p class="text-sm text-rose-700">{{ item.reasons.join(' ') }}</p>
+          </li>
+        }
+      </ul>
+    </section>
+  }
+
+  <div class="flex items-center justify-between">
+    <a routerLink="/files" class="text-sm font-medium text-app-muted underline"
+      >Skip to file ordering</a
+    >
+    <button
+      type="button"
+      class="rounded-lg bg-sky-600 px-5 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:bg-app-border"
+      [disabled]="!documentEditor.hasFiles()"
+      (click)="goToFiles()"
+    >
+      Continue to file ordering
+    </button>
+  </div>
+</section>

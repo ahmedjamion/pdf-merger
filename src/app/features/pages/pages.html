@@ -1,0 +1,161 @@
+﻿<section class="mx-auto flex w-full max-w-6xl flex-col gap-6">
+  <header class="space-y-2">
+    <p class="text-sm font-semibold uppercase tracking-wide text-app-muted">Step 3 of 4</p>
+    <h1 class="text-3xl font-bold text-app-fg">Manage pages</h1>
+    <p class="max-w-4xl text-sm text-app-muted">
+      Drag to reorder individual pages across all files. For PDFs, each source page is listed separately.
+      For image files, each image appears as one page. Rotate or remove pages before export.
+    </p>
+  </header>
+
+  <div class="flex items-center justify-between rounded-2xl border border-app-border bg-app-surface px-4 py-3">
+    <p class="text-sm text-app-muted">{{ pages().length }} page(s) ready for export</p>
+    <button
+      type="button"
+      class="rounded-md border border-app-border px-3 py-1 text-sm font-medium text-app-muted hover:bg-app-panel"
+      (click)="resetFromFiles()"
+    >
+      Reset to file order
+    </button>
+  </div>
+
+  @if (pages().length === 0) {
+    <p class="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+      No pages remain. Add files or keep at least one page to export.
+    </p>
+  } @else {
+    <ul
+      cdkDropList
+      cdkDropListOrientation="mixed"
+      class="page-reorder-grid grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3"
+      (cdkDropListDropped)="onDrop($event)"
+    >
+      @for (page of pages(); track page.id; let index = $index) {
+        <li
+          cdkDrag
+          class="page-drag-item rounded-xl border border-app-border bg-app-surface p-3"
+          [cdkDragPreviewClass]="'page-drag-preview-card'"
+        >
+          <div class="mb-2 flex items-center justify-between">
+            <p class="text-sm font-semibold text-app-fg">Page {{ index + 1 }}</p>
+            <span class="cursor-grab text-app-subtle" cdkDragHandle>
+              <ng-icon name="lucideGripVertical" size="16" />
+            </span>
+          </div>
+
+          <div class="mb-3 w-full aspect-[4/3] overflow-hidden rounded-md border border-app-border bg-app-panel">
+            @if (isPdf(page.sourceType)) {
+              @if (getPdfPagePreview(page) | async; as preview) {
+                <img
+                  [src]="preview"
+                  alt="PDF page preview"
+                  class="h-full w-full object-contain transition-transform duration-150"
+                  [style.transform]="'rotate(' + page.rotation + 'deg)'"
+                />
+              } @else {
+                <div class="flex h-full items-center justify-center text-sm text-app-muted">Loading PDF page...</div>
+              }
+            } @else {
+              <img
+                [src]="page.previewUrl"
+                alt="Page preview"
+                class="h-full w-full object-contain transition-transform duration-150"
+                [style.transform]="'rotate(' + page.rotation + 'deg)'"
+              />
+            }
+          </div>
+
+          <p class="mb-2 line-clamp-1 text-sm text-app-muted">{{ page.sourceFileName }}</p>
+          <p class="mb-3 text-sm text-app-muted">Rotation: {{ page.rotation }}&deg;</p>
+
+          <div class="grid grid-cols-2 gap-2">
+            <button
+              type="button"
+              class="inline-flex items-center justify-center gap-1 rounded-md border border-app-border px-2 py-1 text-sm text-app-muted"
+              (click)="moveUp(index)"
+              [disabled]="index === 0"
+            >
+              <ng-icon name="lucideArrowUp" size="14" />
+              Up
+            </button>
+            <button
+              type="button"
+              class="inline-flex items-center justify-center gap-1 rounded-md border border-app-border px-2 py-1 text-sm text-app-muted"
+              (click)="moveDown(index)"
+              [disabled]="index === pages().length - 1"
+            >
+              <ng-icon name="lucideArrowDown" size="14" />
+              Down
+            </button>
+            <button
+              type="button"
+              class="inline-flex items-center justify-center gap-1 rounded-md border border-app-border px-2 py-1 text-sm text-app-muted"
+              (click)="rotateLeft(page.id)"
+            >
+              <ng-icon name="lucideRotateCcw" size="14" />
+              Left
+            </button>
+            <button
+              type="button"
+              class="inline-flex items-center justify-center gap-1 rounded-md border border-app-border px-2 py-1 text-sm text-app-muted"
+              (click)="rotateRight(page.id)"
+            >
+              <ng-icon name="lucideRotateCw" size="14" />
+              Right
+            </button>
+            <button
+              type="button"
+              class="col-span-2 inline-flex items-center justify-center gap-1 rounded-md border border-rose-300 px-2 py-1 text-sm text-rose-700"
+              (click)="removePage(page.id)"
+            >
+              <ng-icon name="lucideTrash2" size="14" />
+              Remove Page
+            </button>
+          </div>
+
+          <ng-template cdkDragPreview>
+            <div class="page-drag-preview-card rounded-xl border border-sky-200 bg-app-surface p-3 shadow-xl">
+              <div class="flex items-center gap-3">
+                <div class="w-16 aspect-[4/3] overflow-hidden rounded border border-app-border bg-app-panel">
+                  @if (isPdf(page.sourceType)) {
+                    @if (getPdfPagePreview(page) | async; as preview) {
+                      <img [src]="preview" alt="PDF page preview" class="h-full w-full object-contain" />
+                    } @else {
+                      <div class="flex h-full items-center justify-center text-xs text-app-muted">PDF</div>
+                    }
+                  } @else {
+                    <img [src]="page.previewUrl" alt="Page preview" class="h-full w-full object-contain" />
+                  }
+                </div>
+                <div>
+                  <p class="text-sm font-semibold text-app-fg">Page {{ index + 1 }}</p>
+                  <p class="text-sm text-app-muted">{{ page.sourceFileName }}</p>
+                </div>
+              </div>
+            </div>
+          </ng-template>
+
+          <ng-template cdkDragPlaceholder>
+            <div class="page-drag-placeholder h-[286px] rounded-xl border-2 border-dashed border-sky-300 bg-sky-50"></div>
+          </ng-template>
+        </li>
+      }
+    </ul>
+  }
+
+  <div class="flex items-center justify-between">
+    <a routerLink="/files" class="text-sm font-medium text-app-muted underline">Back to file order</a>
+    <button
+      type="button"
+      class="rounded-lg bg-sky-600 px-5 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:bg-app-border"
+      [disabled]="!documentEditor.hasPages()"
+      (click)="goToExport()"
+    >
+      Continue to export
+    </button>
+  </div>
+</section>
+
+
+
+

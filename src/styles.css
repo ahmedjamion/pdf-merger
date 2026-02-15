@@ -1,3 +1,52 @@
-/* You can add global styles to this file, and also import other style files */
+﻿/* You can add global styles to this file, and also import other style files */
 
 @import "tailwindcss";
+
+@custom-variant dark (&:where(.theme-dark, .theme-dark *));
+
+:root {
+  --app-bg: 226 232 240;
+  --app-surface: 255 255 255;
+  --app-panel: 241 245 249;
+  --app-border: 148 163 184;
+  --app-fg: 15 23 42;
+  --app-muted: 51 65 85;
+  --app-subtle: 71 85 105;
+}
+
+.theme-dark {
+  color-scheme: dark;
+  --app-bg: 2 6 23;
+  --app-surface: 15 23 42;
+  --app-panel: 30 41 59;
+  --app-border: 71 85 105;
+  --app-fg: 248 250 252;
+  --app-muted: 226 232 240;
+  --app-subtle: 148 163 184;
+}
+
+@theme inline {
+  --color-app-bg: rgb(var(--app-bg));
+  --color-app-surface: rgb(var(--app-surface));
+  --color-app-panel: rgb(var(--app-panel));
+  --color-app-border: rgb(var(--app-border));
+  --color-app-fg: rgb(var(--app-fg));
+  --color-app-muted: rgb(var(--app-muted));
+  --color-app-subtle: rgb(var(--app-subtle));
+}
+
+@layer base {
+  html {
+    font-size: 17px;
+  }
+
+  body {
+    @apply bg-app-bg text-app-fg antialiased;
+  }
+
+  .theme-dark select,
+  .theme-dark option {
+    background-color: rgb(var(--app-surface));
+    color: rgb(var(--app-fg));
+  }
+}
