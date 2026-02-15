@@ -66,7 +66,9 @@ export class Export implements OnInit, OnDestroy {
 
       const pdfBytes = Uint8Array.from(bytes);
       const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-      const fileName = `${this.exportOptions().fileName}.pdf`;
+      const normalizedName = this.exportOptions().fileName.trim().replace(/\.pdf$/i, '');
+      const safeFileName = normalizedName.length > 0 ? normalizedName : 'merged-document';
+      const fileName = `${safeFileName}.pdf`;
       this.downloadBlob(blob, fileName);
     } catch {
       this.errorMessage.set('Export failed. Please review your files and try again.');

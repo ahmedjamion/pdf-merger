@@ -204,10 +204,10 @@ export class DocumentEditor {
   }
 
   setExportFileName(fileName: string): void {
-    const cleaned = fileName.trim().replace(/\.pdf$/i, '');
+    const cleaned = fileName.replace(/\.pdf$/i, '');
     this._exportOptions.update((options) => ({
       ...options,
-      fileName: cleaned.length > 0 ? cleaned : 'merged-document',
+      fileName: cleaned,
     }));
   }
 

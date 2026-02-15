@@ -195,12 +195,10 @@ export class PdfPreview {
   private async loadPdfJs(): Promise<PdfJsModule> {
     if (!this.pdfJsModulePromise) {
       this.pdfJsModulePromise = import('pdfjs-dist').then((pdfJs) => {
-        if (!pdfJs.GlobalWorkerOptions.workerSrc) {
-          pdfJs.GlobalWorkerOptions.workerSrc = new URL(
-            'assets/pdf.worker.min.mjs',
-            this.document.baseURI,
-          ).toString();
-        }
+        pdfJs.GlobalWorkerOptions.workerSrc = new URL(
+          'assets/pdf.worker.min.mjs',
+          this.document.baseURI,
+        ).toString();
 
         return pdfJs;
       });
