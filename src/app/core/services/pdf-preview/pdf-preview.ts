@@ -1,4 +1,5 @@
-﻿import { Injectable } from '@angular/core';
+﻿import { DOCUMENT } from '@angular/common';
+import { Injectable, inject } from '@angular/core';
 import { ImportedFile } from '../../models/imported-file';
 
 type PdfJsModule = typeof import('pdfjs-dist');
@@ -7,6 +8,7 @@ type PdfJsModule = typeof import('pdfjs-dist');
   providedIn: 'root',
 })
 export class PdfPreview {
+  private readonly document = inject(DOCUMENT);
   private pdfJsModulePromise?: Promise<PdfJsModule>;
   private readonly documentCache = new Map<string, Promise<any>>();
   private readonly previewCache = new Map<string, Promise<string | null>>();
@@ -195,8 +197,8 @@ export class PdfPreview {
       this.pdfJsModulePromise = import('pdfjs-dist').then((pdfJs) => {
         if (!pdfJs.GlobalWorkerOptions.workerSrc) {
           pdfJs.GlobalWorkerOptions.workerSrc = new URL(
-            'pdfjs-dist/build/pdf.worker.min.mjs',
-            import.meta.url,
+            'assets/pdf.worker.min.mjs',
+            this.document.baseURI,
           ).toString();
         }
 
