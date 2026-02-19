@@ -1,4 +1,4 @@
-﻿<section class="mx-auto flex w-full max-w-4xl flex-col gap-6">
+<section class="mx-auto flex w-full max-w-4xl flex-col gap-6">
   <header class="space-y-2">
     <p class="text-sm font-semibold uppercase tracking-wide text-app-muted">Step 4 of 4</p>
     <h1 class="text-3xl font-bold text-app-fg">Export merged PDF</h1>
@@ -27,6 +27,7 @@
         class="w-full rounded-lg border border-app-border bg-app-surface px-3 py-2 text-sm text-app-fg"
         [ngModel]="exportOptions().pageSize"
         (ngModelChange)="onPageSizeChange($event)"
+        [disabled]="previewLoading() || isExporting()"
       >
         <option value="original">Original (source size)</option>
         <option value="a3">A3 (297 x 420 mm)</option>
@@ -47,6 +48,7 @@
         class="w-full rounded-lg border border-app-border bg-app-surface px-3 py-2 text-sm text-app-fg"
         [ngModel]="exportOptions().quality"
         (ngModelChange)="onQualityChange($event)"
+        [disabled]="previewLoading() || isExporting()"
       >
         <option value="high">High (best detail, larger file)</option>
         <option value="medium">Medium (balanced)</option>
@@ -59,13 +61,14 @@
   <section class="rounded-2xl border border-app-border bg-app-surface p-4">
     <div class="mb-3 flex flex-wrap items-center justify-between gap-2">
       <h2 class="text-sm font-semibold text-app-fg">Print Preview</h2>
-      <div class="inline-flex rounded-lg border border-app-border p-1 text-sm">
+      <div class="inline-flex rounded-lg border border-app-border p-1 text-sm" role="tablist" aria-label="Preview mode">
         <button
           type="button"
           class="rounded-md px-3 py-1"
           [class.bg-sky-600]="isQuickMode()"
           [class.text-white]="isQuickMode()"
           [class.text-app-muted]="!isQuickMode()"
+          [disabled]="previewLoading() || isExporting()"
           (click)="onPreviewModeChange('quick')"
         >
           Quick (1 page)
@@ -76,6 +79,7 @@
           [class.bg-sky-600]="isFullMode()"
           [class.text-white]="isFullMode()"
           [class.text-app-muted]="!isFullMode()"
+          [disabled]="previewLoading() || isExporting()"
           (click)="onPreviewModeChange('full')"
         >
           Full (all pages)
@@ -84,12 +88,22 @@
       <button
         type="button"
         class="rounded-md border border-app-border px-3 py-1 text-sm font-medium text-app-muted hover:bg-app-panel"
-        [disabled]="previewLoading()"
+        [disabled]="previewLoading() || isExporting()"
         (click)="refreshPreviewNow()"
       >
         {{ previewLoading() ? 'Refreshing...' : isFullMode() ? 'Generate Full Preview' : 'Refresh Preview' }}
       </button>
     </div>
+
+    <p class="sr-only" aria-live="polite">
+      @if (previewLoading()) {
+        Generating preview.
+      } @else if (previewError()) {
+        {{ previewError() }}
+      } @else {
+        Preview ready.
+      }
+    </p>
 
     @if (isFullMode() && previewNeedsRefresh() && !previewLoading() && previewUrls().length === 0) {
       <p class="mb-3 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-700">
@@ -143,6 +157,3 @@
     </button>
   </div>
 </section>
-
-
-

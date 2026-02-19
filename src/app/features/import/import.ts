@@ -1,4 +1,4 @@
-﻿import { AsyncPipe, DecimalPipe } from '@angular/common';
+import { AsyncPipe, DecimalPipe } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
@@ -40,6 +40,7 @@ export class Import {
   protected readonly totalSize = this.documentEditor.totalSizeBytes;
   protected readonly isDragging = signal(false);
   protected readonly isImporting = signal(false);
+  protected readonly statusMessage = signal('');
 
   async onFileSelected(event: Event): Promise<void> {
     const input = event.target as HTMLInputElement;
@@ -77,10 +78,12 @@ export class Import {
 
   removeFile(id: string): void {
     this.documentEditor.removeFile(id);
+    this.statusMessage.set('File removed.');
   }
 
   clearInvalidFiles(): void {
     this.documentEditor.clearInvalidFiles();
+    this.statusMessage.set('Rejected files list cleared.');
   }
 
   async goToFiles(): Promise<void> {
@@ -104,6 +107,7 @@ export class Import {
 
     try {
       await this.documentEditor.addFiles(files);
+      this.statusMessage.set('Import completed.');
     } finally {
       this.isImporting.set(false);
     }

@@ -1,10 +1,10 @@
-﻿import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
+import { ExportPageSize, ExportQuality } from '../../core/models/export-options';
 import { DocumentEditor } from '../../core/services/document-editor/document-editor';
 import { PdfComposer } from '../../core/services/pdf-composer/pdf-composer';
 import { PdfPreview } from '../../core/services/pdf-preview/pdf-preview';
-import { ExportPageSize, ExportQuality } from '../../core/models/export-options';
 
 type PreviewMode = 'quick' | 'full';
 
@@ -33,6 +33,7 @@ export class Export implements OnInit, OnDestroy {
 
   private previewRefreshTimer: ReturnType<typeof setTimeout> | null = null;
   private previewRequestId = 0;
+  private lastPreviewKey = '';
 
   ngOnInit(): void {
     this.schedulePreviewRefresh();
@@ -118,6 +119,7 @@ export class Export implements OnInit, OnDestroy {
   }
 
   private handlePreviewOptionChange(): void {
+    this.lastPreviewKey = '';
     if (this.previewMode() === 'quick') {
       this.schedulePreviewRefresh();
       return;
@@ -148,12 +150,17 @@ export class Export implements OnInit, OnDestroy {
       return;
     }
 
+    const isQuick = this.previewMode() === 'quick';
+    const maxPages = isQuick ? 1 : this.FULL_PREVIEW_MAX_PAGES;
+    const previewKey = this.createPreviewKey(maxPages);
+
+    if (previewKey === this.lastPreviewKey && this.previewUrls().length > 0 && !this.previewNeedsRefresh()) {
+      return;
+    }
+
     this.previewLoading.set(true);
 
     try {
-      const isQuick = this.previewMode() === 'quick';
-      const maxPages = isQuick ? 1 : this.FULL_PREVIEW_MAX_PAGES;
-
       const bytes = await this.pdfComposer.compose(
         this.documentEditor.files(),
         this.documentEditor.pages(),
@@ -164,6 +171,7 @@ export class Export implements OnInit, OnDestroy {
       const previews = await this.pdfPreview.renderMergedPreviewPages(Uint8Array.from(bytes), {
         scale: isQuick ? 0.9 : 0.68,
         maxPages,
+        batchSize: isQuick ? 1 : 4,
       });
 
       if (requestId !== this.previewRequestId) {
@@ -181,6 +189,7 @@ export class Export implements OnInit, OnDestroy {
 
       this.setPreviewUrls(previews);
       this.previewNeedsRefresh.set(false);
+      this.lastPreviewKey = previewKey;
 
       if (!isQuick && this.documentEditor.pages().length > this.FULL_PREVIEW_MAX_PAGES) {
         this.previewError.set(
@@ -210,6 +219,21 @@ export class Export implements OnInit, OnDestroy {
     }
 
     this.previewUrls.set([]);
+  }
+
+  private createPreviewKey(maxPages: number): string {
+    const filesKey = this.documentEditor
+      .files()
+      .map((file) => `${file.id}:${file.name}:${file.size}:${file.lastModified}`)
+      .join('|');
+
+    const pagesKey = this.documentEditor
+      .pages()
+      .map((page) => `${page.id}:${page.sourceFileId}:${page.sourcePageIndex}:${page.rotation}`)
+      .join('|');
+
+    const options = this.documentEditor.exportOptions();
+    return `${this.previewMode()}:${maxPages}:${options.pageSize}:${options.quality}:${filesKey}:${pagesKey}`;
   }
 
   private downloadBlob(blob: Blob, fileName: string): void {

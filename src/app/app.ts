@@ -27,7 +27,9 @@ export class App {
     }
 
     const storedTheme = localStorage.getItem('theme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const prefersDark = typeof window.matchMedia === 'function'
+      ? window.matchMedia('(prefers-color-scheme: dark)').matches
+      : false;
     const isDark = storedTheme ? storedTheme === 'dark' : prefersDark;
 
     this.isDark.set(isDark);

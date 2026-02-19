@@ -1,4 +1,5 @@
-﻿import { Injectable } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
+import { Injectable, inject } from '@angular/core';
 import { degrees, PDFDocument } from 'pdf-lib';
 import { ExportOptions } from '../../models/export-options';
 import { ImportedFile } from '../../models/imported-file';
@@ -21,6 +22,8 @@ interface DrawPlacement {
   providedIn: 'root',
 })
 export class PdfComposer {
+  private readonly document = inject(DOCUMENT);
+
   async compose(files: ImportedFile[], pages: PageItem[], options: ExportOptions, maxPages?: number): Promise<Uint8Array> {
     const output = await PDFDocument.create();
     const filesById = new Map(files.map((file) => [file.id, file]));
@@ -39,7 +42,7 @@ export class PdfComposer {
       if (file.type === 'application/pdf') {
         let source = pdfCache.get(file.id);
         if (!source) {
-          source = await PDFDocument.load(await file.file.arrayBuffer());
+          source = await PDFDocument.load(await this.readFileBytes(file.file));
           pdfCache.set(file.id, source);
         }
 
@@ -71,7 +74,7 @@ export class PdfComposer {
           rotate: degrees(placement.rotation),
         });
       } else {
-        const imagePayload = await this.prepareImage(file.file, file.type, options.quality);
+        const imagePayload = await this.prepareImage(file.file, file.type, options.quality, options.pageSize);
         const embeddedImage =
           imagePayload.type === 'png'
             ? await output.embedPng(imagePayload.bytes)
@@ -225,20 +228,32 @@ export class PdfComposer {
     file: File,
     fileType: string,
     quality: ExportOptions['quality'],
+    pageSize: ExportOptions['pageSize'],
   ): Promise<ImagePayload> {
     const qualityValue = this.qualityValue(quality);
     const scale = this.qualityScale(quality);
 
     if (quality === 'high' && fileType !== 'image/webp') {
       return {
-        bytes: new Uint8Array(await file.arrayBuffer()),
+        bytes: new Uint8Array(await this.readFileBytes(file)),
         type: fileType === 'image/png' ? 'png' : 'jpeg',
       };
     }
 
-    const blob = new Blob([await file.arrayBuffer()], { type: fileType });
+    if (quality === 'medium' && pageSize === 'original' && fileType === 'image/jpeg') {
+      return {
+        bytes: new Uint8Array(await this.readFileBytes(file)),
+        type: 'jpeg',
+      };
+    }
+
+    if (typeof createImageBitmap !== 'function' || !this.document?.createElement) {
+      throw new Error('Image processing requires browser APIs.');
+    }
+
+    const blob = new Blob([await this.readFileBytes(file)], { type: fileType });
     const bitmap = await createImageBitmap(blob);
-    const canvas = document.createElement('canvas');
+    const canvas = this.document.createElement('canvas');
     canvas.width = Math.max(1, Math.round(bitmap.width * scale));
     canvas.height = Math.max(1, Math.round(bitmap.height * scale));
 
@@ -251,9 +266,7 @@ export class PdfComposer {
     context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
     bitmap.close();
 
-    const jpegBlob = await new Promise<Blob | null>((resolve) =>
-      canvas.toBlob(resolve, 'image/jpeg', qualityValue),
-    );
+    const jpegBlob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/jpeg', qualityValue));
 
     if (!jpegBlob) {
       throw new Error('Unable to process image quality settings.');
@@ -288,4 +301,13 @@ export class PdfComposer {
 
     return 1;
   }
+
+  private async readFileBytes(file: File): Promise<ArrayBuffer> {
+    if (typeof file.arrayBuffer === 'function') {
+      return file.arrayBuffer();
+    }
+
+    return new Response(file).arrayBuffer();
+  }
 }
+

@@ -1,4 +1,4 @@
-﻿export interface PageItem {
+export interface PageItem {
   id: string;
   sourceFileId: string;
   sourceFileName: string;
@@ -6,4 +6,5 @@
   sourcePageIndex: number;
   rotation: number;
   previewUrl?: string;
+  originOrderKey?: string;
 }

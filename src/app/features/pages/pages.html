@@ -1,4 +1,4 @@
-﻿<section class="mx-auto flex w-full max-w-6xl flex-col gap-6">
+<section class="mx-auto flex w-full max-w-6xl flex-col gap-6">
   <header class="space-y-2">
     <p class="text-sm font-semibold uppercase tracking-wide text-app-muted">Step 3 of 4</p>
     <h1 class="text-3xl font-bold text-app-fg">Manage pages</h1>
@@ -7,6 +7,8 @@
       For image files, each image appears as one page. Rotate or remove pages before export.
     </p>
   </header>
+
+  <p class="sr-only" aria-live="polite">{{ statusMessage() }}</p>
 
   <div class="flex items-center justify-between rounded-2xl border border-app-border bg-app-surface px-4 py-3">
     <p class="text-sm text-app-muted">{{ pages().length }} page(s) ready for export</p>
@@ -38,7 +40,7 @@
         >
           <div class="mb-2 flex items-center justify-between">
             <p class="text-sm font-semibold text-app-fg">Page {{ index + 1 }}</p>
-            <span class="cursor-grab text-app-subtle" cdkDragHandle>
+            <span class="cursor-grab text-app-subtle" cdkDragHandle aria-label="Drag page handle">
               <ng-icon name="lucideGripVertical" size="16" />
             </span>
           </div>
@@ -74,6 +76,7 @@
               class="inline-flex items-center justify-center gap-1 rounded-md border border-app-border px-2 py-1 text-sm text-app-muted"
               (click)="moveUp(index)"
               [disabled]="index === 0"
+              [attr.aria-label]="'Move page ' + (index + 1) + ' up'"
             >
               <ng-icon name="lucideArrowUp" size="14" />
               Up
@@ -83,6 +86,7 @@
               class="inline-flex items-center justify-center gap-1 rounded-md border border-app-border px-2 py-1 text-sm text-app-muted"
               (click)="moveDown(index)"
               [disabled]="index === pages().length - 1"
+              [attr.aria-label]="'Move page ' + (index + 1) + ' down'"
             >
               <ng-icon name="lucideArrowDown" size="14" />
               Down
@@ -91,6 +95,7 @@
               type="button"
               class="inline-flex items-center justify-center gap-1 rounded-md border border-app-border px-2 py-1 text-sm text-app-muted"
               (click)="rotateLeft(page.id)"
+              [attr.aria-label]="'Rotate page ' + (index + 1) + ' left'"
             >
               <ng-icon name="lucideRotateCcw" size="14" />
               Left
@@ -99,6 +104,7 @@
               type="button"
               class="inline-flex items-center justify-center gap-1 rounded-md border border-app-border px-2 py-1 text-sm text-app-muted"
               (click)="rotateRight(page.id)"
+              [attr.aria-label]="'Rotate page ' + (index + 1) + ' right'"
             >
               <ng-icon name="lucideRotateCw" size="14" />
               Right
@@ -107,6 +113,7 @@
               type="button"
               class="col-span-2 inline-flex items-center justify-center gap-1 rounded-md border border-rose-300 px-2 py-1 text-sm text-rose-700"
               (click)="removePage(page.id)"
+              [attr.aria-label]="'Remove page ' + (index + 1)"
             >
               <ng-icon name="lucideTrash2" size="14" />
               Remove Page
@@ -155,7 +162,3 @@
     </button>
   </div>
 </section>
-
-
-
-

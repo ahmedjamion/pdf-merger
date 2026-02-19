@@ -121,3 +121,30 @@ These are currently non-blocking for deployment.
 
 ## License
 No license file is currently included. Add one if you plan to distribute publicly.
+
+## Engineering Baseline (February 19, 2026)
+Baseline commands:
+
+```bash
+npm run build
+npm test -- --watch=false
+```
+
+Baseline summary:
+- Build: passed
+- Build warnings:
+  - Initial bundle budget exceeded (`771.71 kB` vs `500 kB` warning budget)
+  - `pdf-lib` transitively imports CommonJS module `pako`
+- Tests: failed (2 failures in `src/app/app.spec.ts` before reliability fixes)
+  - Root cause: `window.matchMedia` not available in test runtime
+
+This baseline is kept to compare before/after improvements for reliability and quality gates.
+
+## Performance Notes
+- Full export preview is intentionally capped to a subset of pages for UI responsiveness.
+- Quick preview mode is the default for fast feedback while editing export options.
+
+## Browser Constraints
+- The app is fully client-side and requires modern browser APIs.
+- Image quality conversion paths rely on browser canvas/image APIs.
+- Unsupported/legacy browsers may have limited preview or image-processing behavior.

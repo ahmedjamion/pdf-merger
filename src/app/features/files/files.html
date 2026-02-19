@@ -1,4 +1,4 @@
-﻿<section class="mx-auto flex w-full max-w-5xl flex-col gap-6">
+<section class="mx-auto flex w-full max-w-5xl flex-col gap-6">
   <header class="space-y-2">
     <p class="text-sm font-semibold uppercase tracking-wide text-app-muted">Step 2 of 4</p>
     <h1 class="text-3xl font-bold text-app-fg">Reorder files</h1>
@@ -7,6 +7,15 @@
       You can also use Move Up and Move Down buttons for keyboard-friendly control.
     </p>
   </header>
+
+  @if (documentEditor.hasManualPageEdits()) {
+    <p class="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+      Manual page edits are active. Reordering files will not rebuild pages automatically.
+      Use "Reset to file order" in Step 3 if you want to regenerate pages from the new file order.
+    </p>
+  }
+
+  <p class="sr-only" aria-live="polite">{{ statusMessage() }}</p>
 
   <div class="rounded-2xl border border-app-border bg-app-surface p-4">
     <div class="mb-3 flex items-center justify-between">
@@ -31,7 +40,7 @@
           >
             <div class="mb-2 flex items-center justify-between gap-2">
               <div class="flex min-w-0 items-center gap-2">
-                <span class="cursor-grab text-app-subtle" cdkDragHandle>
+                <span class="cursor-grab text-app-subtle" cdkDragHandle aria-label="Drag handle">
                   <ng-icon name="lucideGripVertical" size="16" />
                 </span>
                 <p class="line-clamp-1 text-sm font-medium text-app-fg">
@@ -70,6 +79,7 @@
                 type="button"
                 class="inline-flex items-center justify-center gap-1 rounded-md border border-app-border px-2 py-1 text-sm text-app-muted disabled:opacity-40"
                 [disabled]="index === 0"
+                [attr.aria-label]="'Move ' + file.name + ' up'"
                 (click)="moveUp(index)"
               >
                 <ng-icon name="lucideArrowUp" size="14" />
@@ -79,6 +89,7 @@
                 type="button"
                 class="inline-flex items-center justify-center gap-1 rounded-md border border-app-border px-2 py-1 text-sm text-app-muted disabled:opacity-40"
                 [disabled]="index === files().length - 1"
+                [attr.aria-label]="'Move ' + file.name + ' down'"
                 (click)="moveDown(index)"
               >
                 <ng-icon name="lucideArrowDown" size="14" />
@@ -87,6 +98,7 @@
               <button
                 type="button"
                 class="inline-flex items-center justify-center gap-1 rounded-md border border-rose-300 px-2 py-1 text-sm text-rose-700"
+                [attr.aria-label]="'Remove ' + file.name"
                 (click)="removeFile(file.id)"
               >
                 <ng-icon name="lucideTrash2" size="14" />

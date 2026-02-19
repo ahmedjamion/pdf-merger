@@ -1,51 +1,59 @@
 {
-  "name": "pdf-merger",
-  "version": "0.0.0",
-  "scripts": {
-    "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build",
-    "watch": "ng build --watch --configuration development",
-    "test": "ng test"
-  },
-  "prettier": {
-    "printWidth": 100,
-    "singleQuote": true,
-    "overrides": [
-      {
-        "files": "*.html",
-        "options": {
-          "parser": "angular"
-        }
-      }
-    ]
-  },
-  "private": true,
-  "packageManager": "npm@11.7.0",
-  "dependencies": {
-    "@angular/cdk": "^21.1.4",
-    "@angular/common": "^21.0.0",
-    "@angular/compiler": "^21.0.0",
-    "@angular/core": "^21.0.0",
-    "@angular/forms": "^21.0.0",
-    "@angular/platform-browser": "^21.0.0",
-    "@angular/router": "^21.0.0",
-    "@ng-icons/core": "^33.1.0",
-    "@ng-icons/lucide": "^33.1.0",
-    "pdf-lib": "^1.17.1",
-    "pdfjs-dist": "^5.4.624",
-    "rxjs": "~7.8.0",
-    "tslib": "^2.3.0"
-  },
-  "devDependencies": {
-    "@angular/build": "^21.0.4",
-    "@angular/cli": "^21.0.4",
-    "@angular/compiler-cli": "^21.0.0",
-    "@tailwindcss/postcss": "^4.1.12",
-    "jsdom": "^27.1.0",
-    "postcss": "^8.5.3",
-    "tailwindcss": "^4.1.12",
-    "typescript": "~5.9.2",
-    "vitest": "^4.0.8"
-  }
+    "name":  "pdf-merger",
+    "version":  "0.0.0",
+    "scripts":  {
+                    "ng":  "ng",
+                    "start":  "ng serve",
+                    "build":  "ng build",
+                    "watch":  "ng build --watch --configuration development",
+                    "test":  "ng test",
+                    "lint":  "eslint \"src/**/*.{ts,html}\"",
+                    "lint:fix":  "npm run lint -- --fix"
+                },
+    "prettier":  {
+                     "printWidth":  100,
+                     "singleQuote":  true,
+                     "overrides":  [
+                                       {
+                                           "files":  "*.html",
+                                           "options":  {
+                                                           "parser":  "angular"
+                                                       }
+                                       }
+                                   ]
+                 },
+    "private":  true,
+    "packageManager":  "npm@11.7.0",
+    "dependencies":  {
+                         "@angular/cdk":  "^21.1.4",
+                         "@angular/common":  "^21.0.0",
+                         "@angular/compiler":  "^21.0.0",
+                         "@angular/core":  "^21.0.0",
+                         "@angular/forms":  "^21.0.0",
+                         "@angular/platform-browser":  "^21.0.0",
+                         "@angular/router":  "^21.0.0",
+                         "@ng-icons/core":  "^33.1.0",
+                         "@ng-icons/lucide":  "^33.1.0",
+                         "pdf-lib":  "^1.17.1",
+                         "pdfjs-dist":  "^5.4.624",
+                         "rxjs":  "~7.8.0",
+                         "tslib":  "^2.3.0"
+                     },
+    "devDependencies":  {
+                            "@angular-eslint/builder":  "^21.2.0",
+                            "@angular-eslint/eslint-plugin":  "^21.2.0",
+                            "@angular-eslint/eslint-plugin-template":  "^21.2.0",
+                            "@angular-eslint/template-parser":  "^21.2.0",
+                            "@angular/build":  "^21.0.4",
+                            "@angular/cli":  "^21.0.4",
+                            "@angular/compiler-cli":  "^21.0.0",
+                            "@tailwindcss/postcss":  "^4.1.12",
+                            "eslint":  "^9.39.2",
+                            "jsdom":  "^27.1.0",
+                            "postcss":  "^8.5.3",
+                            "tailwindcss":  "^4.1.12",
+                            "typescript":  "~5.9.2",
+                            "typescript-eslint":  "^8.56.0",
+                            "vitest":  "^4.0.8"
+                        }
 }

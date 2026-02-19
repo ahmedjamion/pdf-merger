@@ -1,7 +1,7 @@
-﻿import { AsyncPipe } from '@angular/common';
-import { Component, inject } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { AsyncPipe } from '@angular/common';
 import { CdkDragDrop, DragDropModule } from '@angular/cdk/drag-drop';
+import { Component, inject, signal } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
   lucideArrowDown,
@@ -11,8 +11,8 @@ import {
   lucideImage,
   lucideTrash2,
 } from '@ng-icons/lucide';
-import { DocumentEditor } from '../../core/services/document-editor/document-editor';
 import { ImportedFile } from '../../core/models/imported-file';
+import { DocumentEditor } from '../../core/services/document-editor/document-editor';
 import { PdfPreview } from '../../core/services/pdf-preview/pdf-preview';
 
 @Component({
@@ -37,21 +37,26 @@ export class Files {
   private readonly pdfPreview = inject(PdfPreview);
 
   protected readonly files = this.documentEditor.files;
+  protected readonly statusMessage = signal('');
 
   onDrop(event: CdkDragDrop<ImportedFile[]>): void {
     this.documentEditor.reorderFiles(event);
+    this.statusMessage.set('File order updated.');
   }
 
   moveUp(index: number): void {
     this.documentEditor.moveFile(index, index - 1);
+    this.statusMessage.set('File moved up.');
   }
 
   moveDown(index: number): void {
     this.documentEditor.moveFile(index, index + 1);
+    this.statusMessage.set('File moved down.');
   }
 
   removeFile(id: string): void {
     this.documentEditor.removeFile(id);
+    this.statusMessage.set('File removed.');
   }
 
   async goToPages(): Promise<void> {
