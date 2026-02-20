@@ -1,4 +1,4 @@
-﻿export type ExportPageSize =
+export type ExportPageSize =
   | 'original'
   | 'a3'
   | 'a4'
@@ -12,8 +12,11 @@
 
 export type ExportQuality = 'high' | 'medium' | 'low';
 
+export type ExportOrientation = 'auto' | 'portrait' | 'landscape';
+
 export interface ExportOptions {
   fileName: string;
   pageSize: ExportPageSize;
   quality: ExportQuality;
+  orientation: ExportOrientation;
 }

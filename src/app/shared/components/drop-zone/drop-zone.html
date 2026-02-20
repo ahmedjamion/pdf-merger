@@ -1,0 +1,70 @@
+<div
+  class="relative flex flex-col items-center justify-center rounded-2xl border-2 border-dashed p-8 transition-all duration-300"
+  [class.border-sky-400]="isDragging()"
+  [class.bg-sky-50]="isDragging()"
+  [class.scale-[1.02]]="isDragging()"
+  [class.border-slate-200]="!isDragging()"
+  [class.bg-slate-50]="!isDragging()"
+  [class.dark:border-slate-700]="!isDragging()"
+  [class.dark:bg-slate-800/50]="!isDragging()"
+  [class.dark:hover:border-slate-600]="!isDragging()"
+  (dragover)="onDragOver($event)"
+  (dragleave)="onDragLeave($event)"
+  (drop)="onDrop($event)"
+>
+  <!-- Upload Icon -->
+  <div 
+    class="mb-4 flex h-16 w-16 items-center justify-center rounded-full transition-all duration-300"
+    [class.bg-sky-100]="isDragging()"
+    [class.text-sky-600]="isDragging()"
+    [class.bg-slate-100]="!isDragging()"
+    [class.text-slate-400]="!isDragging()"
+    [class.dark:bg-slate-700]="!isDragging()"
+    [class.dark:text-slate-500]="!isDragging()"
+  >
+    <ng-icon name="lucideUpload" size="28" [class.animate-bounce]="isDragging()" />
+  </div>
+
+  <!-- Text -->
+  <p class="text-lg font-semibold text-slate-700 dark:text-slate-200">
+    @if (isDragging()) {
+      Drop files here
+    } @else {
+      Drag & drop files
+    }
+  </p>
+  
+  <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">or</p>
+
+  <!-- Browse Button -->
+  <label
+    class="mt-4 inline-flex cursor-pointer items-center gap-2 rounded-xl bg-sky-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-sky-600/25 transition-all duration-200 hover:bg-sky-500 hover:shadow-xl hover:shadow-sky-600/30"
+    [class.pointer-events-none]="isProcessing()"
+    [class.opacity-60]="isProcessing()"
+    [class.cursor-wait]="isProcessing()"
+  >
+    @if (isProcessing()) {
+      <svg class="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+      </svg>
+      Processing...
+    } @else {
+      <ng-icon name="lucideFolderOpen" size="16" />
+      Browse files
+    }
+    <input
+      type="file"
+      class="hidden"
+      accept=".pdf,.jpg,.jpeg,.png,.webp"
+      multiple
+      [disabled]="isProcessing()"
+      (change)="onFileInput($event)"
+    />
+  </label>
+
+  <!-- Supported Formats -->
+  <p class="mt-4 text-xs text-slate-400 dark:text-slate-500">
+    Supported: PDF, JPG, PNG, WEBP
+  </p>
+</div>

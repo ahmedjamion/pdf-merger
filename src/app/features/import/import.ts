@@ -1,32 +1,20 @@
-import { AsyncPipe, DecimalPipe } from '@angular/common';
+import { DecimalPipe, AsyncPipe } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import {
-  lucideCircleAlert,
-  lucideFileText,
-  lucideFolderOpen,
-  lucideImage,
-  lucideTrash2,
-  lucideUpload,
-} from '@ng-icons/lucide';
-import { ImportedFile } from '../../core/models/imported-file';
+import { lucideCircleAlert } from '@ng-icons/lucide';
 import { DocumentEditor } from '../../core/services/document-editor/document-editor';
 import { PdfPreview } from '../../core/services/pdf-preview/pdf-preview';
+import { PageHeader } from '../../shared/components/page-header/page-header';
+import { PageFooter } from '../../shared/components/page-footer/page-footer';
+import { DropZone } from '../../shared/components/drop-zone/drop-zone';
+import { FileCard } from '../../shared/components/file-card/file-card';
+import { Alert } from '../../shared/components/alert/alert';
 
 @Component({
   selector: 'app-import-page',
-  imports: [RouterLink, DecimalPipe, AsyncPipe, NgIcon],
-  providers: [
-    provideIcons({
-      lucideUpload,
-      lucideFolderOpen,
-      lucideFileText,
-      lucideImage,
-      lucideTrash2,
-      lucideCircleAlert,
-    }),
-  ],
+  imports: [DecimalPipe, AsyncPipe, NgIcon, PageHeader, PageFooter, DropZone, FileCard, Alert],
+  providers: [provideIcons({ lucideCircleAlert })],
   templateUrl: './import.html',
   styleUrl: './import.css',
 })
@@ -42,25 +30,20 @@ export class Import {
   protected readonly isImporting = signal(false);
   protected readonly statusMessage = signal('');
 
-  async onFileSelected(event: Event): Promise<void> {
-    const input = event.target as HTMLInputElement;
-
-    if (!input.files?.length) {
+  async onFileSelected(files: FileList | null): Promise<void> {
+    if (!files?.length) {
       return;
     }
 
-    const files = Array.from(input.files);
-    await this.addFiles(files);
-    input.value = '';
+    const fileList = Array.from(files);
+    await this.addFiles(fileList);
   }
 
-  onDragOver(event: DragEvent): void {
-    event.preventDefault();
+  onDragOver(): void {
     this.isDragging.set(true);
   }
 
-  onDragLeave(event: DragEvent): void {
-    event.preventDefault();
+  onDragLeave(): void {
     this.isDragging.set(false);
   }
 
@@ -94,11 +77,7 @@ export class Import {
     await this.router.navigate(['/files']);
   }
 
-  protected isPdf(type: string): boolean {
-    return type === 'application/pdf';
-  }
-
-  protected getPdfFilePreview(file: ImportedFile): Promise<string | null> {
+  getPdfFilePreview(file: any): Promise<string | null> {
     return this.pdfPreview.getPagePreview(file, 0);
   }
 

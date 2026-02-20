@@ -1,30 +1,28 @@
 <section class="mx-auto flex w-full max-w-4xl flex-col gap-6">
-  <header class="space-y-2">
-    <p class="text-sm font-semibold uppercase tracking-wide text-app-muted">Step 4 of 4</p>
-    <h1 class="text-3xl font-bold text-app-fg">Export merged PDF</h1>
-    <p class="max-w-3xl text-sm text-app-muted">
-      Choose your output options and export one merged PDF. Original page size preserves each source page exactly.
-      Standard paper options will fit each page into your selected format.
-    </p>
-  </header>
+  <app-page-header
+    [step]="4"
+    [totalSteps]="4"
+    title="Export merged PDF"
+    description="Choose your output options and export one merged PDF. Original page size preserves each source page exactly. Standard paper options will fit each page into your selected format."
+  />
 
-  <div class="space-y-4 rounded-2xl border border-app-border bg-app-surface p-4">
-    <label class="block space-y-1">
-      <span class="text-sm font-medium text-app-muted">File name</span>
+  <div class="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-800">
+    <label class="block space-y-2">
+      <span class="text-sm font-medium text-slate-700 dark:text-slate-300">File name</span>
       <input
         type="text"
-        class="w-full rounded-lg border border-app-border bg-app-surface px-3 py-2 text-sm text-app-fg placeholder:text-app-subtle"
+        class="w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20 dark:border-slate-700 dark:bg-slate-900/50 dark:text-white dark:placeholder:text-slate-500"
         [ngModel]="exportOptions().fileName"
         (ngModelChange)="onFileNameChange($event)"
         placeholder="merged-document"
       />
-      <span class="text-sm text-app-muted">The exported file will be saved as .pdf automatically.</span>
+      <span class="text-xs text-slate-500 dark:text-slate-400">The exported file will be saved as .pdf automatically.</span>
     </label>
 
-    <label class="block space-y-1">
-      <span class="text-sm font-medium text-app-muted">Page size</span>
+    <label class="block space-y-2">
+      <span class="text-sm font-medium text-slate-700 dark:text-slate-300">Page size</span>
       <select
-        class="w-full rounded-lg border border-app-border bg-app-surface px-3 py-2 text-sm text-app-fg"
+        class="w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20 dark:border-slate-700 dark:bg-slate-900/50 dark:text-white"
         [ngModel]="exportOptions().pageSize"
         (ngModelChange)="onPageSizeChange($event)"
         [disabled]="previewLoading() || isExporting()"
@@ -42,10 +40,25 @@
       </select>
     </label>
 
-    <label class="block space-y-1">
-      <span class="text-sm font-medium text-app-muted">Image quality</span>
+    <label class="block space-y-2">
+      <span class="text-sm font-medium text-slate-700 dark:text-slate-300">Orientation</span>
       <select
-        class="w-full rounded-lg border border-app-border bg-app-surface px-3 py-2 text-sm text-app-fg"
+        class="w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20 dark:border-slate-700 dark:bg-slate-900/50 dark:text-white"
+        [ngModel]="exportOptions().orientation"
+        (ngModelChange)="onOrientationChange($event)"
+        [disabled]="previewLoading() || isExporting()"
+      >
+        <option value="auto">Auto (match source)</option>
+        <option value="portrait">Portrait (tall)</option>
+        <option value="landscape">Landscape (wide)</option>
+      </select>
+      <span class="text-xs text-slate-500 dark:text-slate-400">Only applies when a standard page size is selected.</span>
+    </label>
+
+    <label class="block space-y-2">
+      <span class="text-sm font-medium text-slate-700 dark:text-slate-300">Image quality</span>
+      <select
+        class="w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20 dark:border-slate-700 dark:bg-slate-900/50 dark:text-white"
         [ngModel]="exportOptions().quality"
         (ngModelChange)="onQualityChange($event)"
         [disabled]="previewLoading() || isExporting()"
@@ -54,45 +67,55 @@
         <option value="medium">Medium (balanced)</option>
         <option value="low">Low (smaller file, lower detail)</option>
       </select>
-      <span class="text-sm text-app-muted">Quality affects image pages only.</span>
+      <span class="text-xs text-slate-500 dark:text-slate-400">Quality affects image pages only.</span>
     </label>
   </div>
 
-  <section class="rounded-2xl border border-app-border bg-app-surface p-4">
-    <div class="mb-3 flex flex-wrap items-center justify-between gap-2">
-      <h2 class="text-sm font-semibold text-app-fg">Print Preview</h2>
-      <div class="inline-flex rounded-lg border border-app-border p-1 text-sm" role="tablist" aria-label="Preview mode">
+  <section class="rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-800">
+    <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
+      <h2 class="text-sm font-semibold text-slate-900 dark:text-white">Print Preview</h2>
+      
+      <div class="flex flex-wrap items-center gap-2">
+        <div class="inline-flex rounded-lg border border-slate-200 p-1 dark:border-slate-700" role="tablist" aria-label="Preview mode">
+          <button
+            type="button"
+            class="rounded-md px-3 py-1.5 text-xs font-medium transition-all"
+            [class.bg-sky-600]="isQuickMode()"
+            [class.text-white]="isQuickMode()"
+            [class.text-slate-600]="!isQuickMode()"
+            [class.dark:text-slate-400]="!isQuickMode()"
+            [class.hover:text-slate-900]="!isQuickMode()"
+            [class.dark:hover:text-white]="!isQuickMode()"
+            [disabled]="previewLoading() || isExporting()"
+            (click)="onPreviewModeChange('quick')"
+          >
+            Quick (1 page)
+          </button>
+          <button
+            type="button"
+            class="rounded-md px-3 py-1.5 text-xs font-medium transition-all"
+            [class.bg-sky-600]="isFullMode()"
+            [class.text-white]="isFullMode()"
+            [class.text-slate-600]="!isFullMode()"
+            [class.dark:text-slate-400]="!isFullMode()"
+            [class.hover:text-slate-900]="!isFullMode()"
+            [class.dark:hover:text-white]="!isFullMode()"
+            [disabled]="previewLoading() || isExporting()"
+            (click)="onPreviewModeChange('full')"
+          >
+            Full (all pages)
+          </button>
+        </div>
+        
         <button
           type="button"
-          class="rounded-md px-3 py-1"
-          [class.bg-sky-600]="isQuickMode()"
-          [class.text-white]="isQuickMode()"
-          [class.text-app-muted]="!isQuickMode()"
+          class="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 transition-all hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900/50 dark:text-slate-300 dark:hover:bg-slate-700"
           [disabled]="previewLoading() || isExporting()"
-          (click)="onPreviewModeChange('quick')"
+          (click)="refreshPreviewNow()"
         >
-          Quick (1 page)
-        </button>
-        <button
-          type="button"
-          class="rounded-md px-3 py-1"
-          [class.bg-sky-600]="isFullMode()"
-          [class.text-white]="isFullMode()"
-          [class.text-app-muted]="!isFullMode()"
-          [disabled]="previewLoading() || isExporting()"
-          (click)="onPreviewModeChange('full')"
-        >
-          Full (all pages)
+          {{ previewLoading() ? 'Refreshing...' : isFullMode() ? 'Generate Full Preview' : 'Refresh Preview' }}
         </button>
       </div>
-      <button
-        type="button"
-        class="rounded-md border border-app-border px-3 py-1 text-sm font-medium text-app-muted hover:bg-app-panel"
-        [disabled]="previewLoading() || isExporting()"
-        (click)="refreshPreviewNow()"
-      >
-        {{ previewLoading() ? 'Refreshing...' : isFullMode() ? 'Generate Full Preview' : 'Refresh Preview' }}
-      </button>
     </div>
 
     <p class="sr-only" aria-live="polite">
@@ -106,54 +129,55 @@
     </p>
 
     @if (isFullMode() && previewNeedsRefresh() && !previewLoading() && previewUrls().length === 0) {
-      <p class="mb-3 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-700">
-        Full preview renders many pages and can be slower. Click "Generate Full Preview".
-      </p>
+      <app-alert type="warning" message="Full preview renders many pages and can be slower. Click 'Generate Full Preview'." />
     }
 
-    <div class="min-h-52 rounded-lg border border-app-border bg-app-panel p-3">
+    <div class="min-h-52 rounded-xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-900/50">
       @if (previewLoading()) {
-        <div class="flex min-h-44 items-center justify-center text-sm text-app-muted">Generating preview...</div>
+        <div class="flex min-h-44 items-center justify-center">
+          <div class="flex flex-col items-center gap-3">
+            <svg class="h-8 w-8 animate-spin text-sky-600" viewBox="0 0 24 24" fill="none">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+            </svg>
+            <span class="text-sm text-slate-500 dark:text-slate-400">Generating preview...</span>
+          </div>
+        </div>
       } @else if (previewUrls().length > 0) {
         @if (isQuickMode()) {
-          <img [src]="previewUrls()[0]" alt="Merged document preview" class="mx-auto max-h-[28rem] w-auto object-contain" />
+          <img [src]="previewUrls()[0]" alt="Merged document preview" class="mx-auto max-h-112 w-auto object-contain" />
         } @else {
-          <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
+          <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
             @for (preview of previewUrls(); track preview; let idx = $index) {
-              <div class="rounded-md border border-app-border bg-app-surface p-2">
-                <p class="mb-2 text-sm font-medium text-app-muted">Page {{ idx + 1 }}</p>
-                <img [src]="preview" alt="Merged page preview" class="mx-auto max-h-[24rem] w-auto object-contain" />
+              <div class="rounded-lg border border-slate-200 bg-app-panel p-3 dark:border-slate-700 dark:bg-slate-800">
+                <p class="mb-2 text-xs font-medium text-slate-600 dark:text-slate-400">Page {{ idx + 1 }}</p>
+                <img [src]="preview" alt="Merged page preview" class="mx-auto max-h-80 w-auto object-contain" />
               </div>
             }
           </div>
         }
       } @else {
-        <div class="flex min-h-44 items-center justify-center text-sm text-app-muted">
-          Preview unavailable. You can still export the final PDF.
+        <div class="flex min-h-44 items-center justify-center">
+          <span class="text-sm text-slate-500 dark:text-slate-400">Preview unavailable. You can still export the final PDF.</span>
         </div>
       }
     </div>
 
     @if (previewError()) {
-      <p class="mt-2 text-sm text-rose-600">{{ previewError() }}</p>
+      <p class="mt-3 text-sm text-red-600 dark:text-red-400">{{ previewError() }}</p>
     }
   </section>
 
   @if (errorMessage()) {
-    <p class="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
-      {{ errorMessage() }}
-    </p>
+    <app-alert type="error" [message]="errorMessage()" />
   }
 
-  <div class="flex items-center justify-between">
-    <a routerLink="/pages" class="text-sm font-medium text-app-muted underline">Back to page manager</a>
-    <button
-      type="button"
-      class="rounded-lg bg-emerald-600 px-5 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:bg-app-border"
-      [disabled]="isExporting() || !documentEditor.hasPages()"
-      (click)="exportPdf()"
-    >
-      {{ isExporting() ? 'Merging...' : 'Export PDF' }}
-    </button>
-  </div>
+  <app-page-footer
+    backLink="/pages"
+    backLabel="Back to page manager"
+    [continueLabel]="isExporting() ? 'Merging...' : 'Export PDF'"
+    [continueDisabled]="isExporting() || !documentEditor.hasPages()"
+    [isLoading]="isExporting()"
+    (continue)="exportPdf()"
+  />
 </section>

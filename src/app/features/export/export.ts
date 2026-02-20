@@ -1,16 +1,18 @@
 import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
-import { ExportPageSize, ExportQuality } from '../../core/models/export-options';
+import { ExportPageSize, ExportQuality, ExportOrientation } from '../../core/models/export-options';
 import { DocumentEditor } from '../../core/services/document-editor/document-editor';
 import { PdfComposer } from '../../core/services/pdf-composer/pdf-composer';
 import { PdfPreview } from '../../core/services/pdf-preview/pdf-preview';
+import { PageHeader } from '../../shared/components/page-header/page-header';
+import { PageFooter } from '../../shared/components/page-footer/page-footer';
+import { Alert } from '../../shared/components/alert/alert';
 
 type PreviewMode = 'quick' | 'full';
 
 @Component({
   selector: 'app-export-page',
-  imports: [RouterLink, FormsModule],
+  imports: [FormsModule, PageHeader, PageFooter, Alert],
   templateUrl: './export.html',
   styleUrl: './export.css',
 })
@@ -92,6 +94,11 @@ export class Export implements OnInit, OnDestroy {
     this.handlePreviewOptionChange();
   }
 
+  onOrientationChange(value: ExportOrientation): void {
+    this.documentEditor.setExportOrientation(value);
+    this.handlePreviewOptionChange();
+  }
+
   onPreviewModeChange(value: PreviewMode): void {
     this.previewMode.set(value);
     this.previewError.set('');
@@ -110,11 +117,11 @@ export class Export implements OnInit, OnDestroy {
     void this.refreshPreview();
   }
 
-  protected isQuickMode(): boolean {
+  isQuickMode(): boolean {
     return this.previewMode() === 'quick';
   }
 
-  protected isFullMode(): boolean {
+  isFullMode(): boolean {
     return this.previewMode() === 'full';
   }
 

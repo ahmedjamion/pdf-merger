@@ -1,7 +1,7 @@
 import { DOCUMENT } from '@angular/common';
 import { Injectable, inject } from '@angular/core';
 import { degrees, PDFDocument } from 'pdf-lib';
-import { ExportOptions } from '../../models/export-options';
+import { ExportOptions, ExportOrientation } from '../../models/export-options';
 import { ImportedFile } from '../../models/imported-file';
 import { PageItem } from '../../models/page-item';
 
@@ -48,7 +48,7 @@ export class PdfComposer {
 
         const sourcePage = source.getPage(pageItem.sourcePageIndex);
         const embeddedPage = await output.embedPage(sourcePage);
-        const pageSize = this.resolvePageSize(options.pageSize, embeddedPage.width, embeddedPage.height);
+        const pageSize = this.resolvePageSize(options.pageSize, embeddedPage.width, embeddedPage.height, options.orientation);
 
         const rotatedContentSize = this.rotatedContentSize(
           embeddedPage.width,
@@ -80,7 +80,7 @@ export class PdfComposer {
             ? await output.embedPng(imagePayload.bytes)
             : await output.embedJpg(imagePayload.bytes);
 
-        const pageSize = this.resolvePageSize(options.pageSize, embeddedImage.width, embeddedImage.height);
+        const pageSize = this.resolvePageSize(options.pageSize, embeddedImage.width, embeddedImage.height, options.orientation);
 
         const rotatedContentSize = this.rotatedContentSize(
           embeddedImage.width,
@@ -180,12 +180,16 @@ export class PdfComposer {
     pageSize: ExportOptions['pageSize'],
     originalWidth: number,
     originalHeight: number,
+    orientation: ExportOrientation = 'auto',
   ): { width: number; height: number } {
     if (pageSize === 'original') {
       return { width: originalWidth, height: originalHeight };
     }
 
-    const isLandscape = originalWidth > originalHeight;
+    const isLandscapeOriginal = originalWidth > originalHeight;
+    const isLandscape = orientation === 'auto' 
+      ? isLandscapeOriginal 
+      : orientation === 'landscape';
 
     const sizeMap: Record<Exclude<ExportOptions['pageSize'], 'original'>, { width: number; height: number }> = {
       a3: { width: 841.89, height: 1190.55 },
@@ -228,24 +232,10 @@ export class PdfComposer {
     file: File,
     fileType: string,
     quality: ExportOptions['quality'],
-    pageSize: ExportOptions['pageSize'],
+    _pageSize: ExportOptions['pageSize'],
   ): Promise<ImagePayload> {
     const qualityValue = this.qualityValue(quality);
     const scale = this.qualityScale(quality);
-
-    if (quality === 'high' && fileType !== 'image/webp') {
-      return {
-        bytes: new Uint8Array(await this.readFileBytes(file)),
-        type: fileType === 'image/png' ? 'png' : 'jpeg',
-      };
-    }
-
-    if (quality === 'medium' && pageSize === 'original' && fileType === 'image/jpeg') {
-      return {
-        bytes: new Uint8Array(await this.readFileBytes(file)),
-        type: 'jpeg',
-      };
-    }
 
     if (typeof createImageBitmap !== 'function' || !this.document?.createElement) {
       throw new Error('Image processing requires browser APIs.');

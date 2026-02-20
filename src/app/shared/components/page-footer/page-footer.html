@@ -1,0 +1,31 @@
+<div class="flex items-center justify-between border-t border-slate-200 dark:border-slate-700 pt-6">
+  @if (backLink()) {
+    <a 
+      [routerLink]="backLink()" 
+      class="text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors"
+    >
+      ← {{ backLabel() }}
+    </a>
+  } @else {
+    <div></div>
+  }
+  
+  <button
+    type="button"
+    class="rounded-lg bg-sky-600 px-6 py-2.5 text-sm font-semibold text-white shadow-lg shadow-sky-600/25 hover:bg-sky-500 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:shadow-none dark:disabled:bg-slate-700 transition-all duration-200"
+    [disabled]="continueDisabled() || isLoading()"
+    (click)="onContinue()"
+  >
+    @if (isLoading()) {
+      <span class="flex items-center gap-2">
+        <svg class="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+        </svg>
+        Processing...
+      </span>
+    } @else {
+      {{ continueLabel() }} →
+    }
+  </button>
+</div>

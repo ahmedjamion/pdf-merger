@@ -1,0 +1,61 @@
+@if (message()) {
+  <div 
+    class="relative flex items-start gap-3 rounded-lg border p-4 shadow-sm"
+    [class.bg-sky-50]="type() === 'info'"
+    [class.border-sky-200]="type() === 'info'"
+    [class.dark:bg-sky-900/20]="type() === 'info'"
+    [class.dark:border-sky-800]="type() === 'info'"
+    [class.text-sky-800]="type() === 'info'"
+    [class.dark:text-sky-200]="type() === 'info'"
+    [class.bg-amber-50]="type() === 'warning'"
+    [class.border-amber-200]="type() === 'warning'"
+    [class.dark:bg-amber-900/20]="type() === 'warning'"
+    [class.dark:border-amber-800]="type() === 'warning'"
+    [class.text-amber-800]="type() === 'warning'"
+    [class.dark:text-amber-200]="type() === 'warning'"
+    [class.bg-red-50]="type() === 'error'"
+    [class.border-red-200]="type() === 'error'"
+    [class.dark:bg-red-900/20]="type() === 'error'"
+    [class.dark:border-red-800]="type() === 'error'"
+    [class.text-red-800]="type() === 'error'"
+    [class.dark:text-red-200]="type() === 'error'"
+    [class.bg-emerald-50]="type() === 'success'"
+    [class.border-emerald-200]="type() === 'success'"
+    [class.dark:bg-emerald-900/20]="type() === 'success'"
+    [class.dark:border-emerald-800]="type() === 'success'"
+    [class.text-emerald-800]="type() === 'success'"
+    [class.dark:text-emerald-200]="type() === 'success'"
+  >
+    <div class="flex-shrink-0 mt-0.5">
+      @switch (type()) {
+        @case ('info') {
+          <ng-icon name="lucideInfo" size="20" class="text-sky-600 dark:text-sky-400" />
+        }
+        @case ('warning') {
+          <ng-icon name="lucideAlertTriangle" size="20" class="text-amber-600 dark:text-amber-400" />
+        }
+        @case ('error') {
+          <ng-icon name="lucideXCircle" size="20" class="text-red-600 dark:text-red-400" />
+        }
+        @case ('success') {
+          <ng-icon name="lucideXCircle" size="20" class="text-emerald-600 dark:text-emerald-400" />
+        }
+      }
+    </div>
+    
+    <p class="text-sm font-medium flex-1">
+      {{ message() }}
+    </p>
+
+    @if (dismissible()) {
+      <button
+        type="button"
+        class="flex-shrink-0 -mt-1 -mr-1 p-1 rounded-md hover:opacity-70 transition-opacity"
+        (click)="onDismiss()"
+        [attr.aria-label]="'Dismiss'"
+      >
+        <ng-icon name="lucideX" size="16" />
+      </button>
+    }
+  </div>
+}

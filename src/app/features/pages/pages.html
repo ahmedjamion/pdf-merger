@@ -1,20 +1,18 @@
 <section class="mx-auto flex w-full max-w-6xl flex-col gap-6">
-  <header class="space-y-2">
-    <p class="text-sm font-semibold uppercase tracking-wide text-app-muted">Step 3 of 4</p>
-    <h1 class="text-3xl font-bold text-app-fg">Manage pages</h1>
-    <p class="max-w-4xl text-sm text-app-muted">
-      Drag to reorder individual pages across all files. For PDFs, each source page is listed separately.
-      For image files, each image appears as one page. Rotate or remove pages before export.
-    </p>
-  </header>
+  <app-page-header
+    [step]="3"
+    [totalSteps]="4"
+    title="Manage pages"
+    description="Drag to reorder individual pages across all files. For PDFs, each source page is listed separately. For image files, each image appears as one page. Rotate or remove pages before export."
+  />
 
   <p class="sr-only" aria-live="polite">{{ statusMessage() }}</p>
 
-  <div class="flex items-center justify-between rounded-2xl border border-app-border bg-app-surface px-4 py-3">
-    <p class="text-sm text-app-muted">{{ pages().length }} page(s) ready for export</p>
+  <div class="flex items-center justify-between rounded-xl border border-slate-200 bg-white px-5 py-3 dark:border-slate-700 dark:bg-slate-800">
+    <p class="text-sm text-slate-600 dark:text-slate-400">{{ pages().length }} page{{ pages().length !== 1 ? 's' : '' }} ready for export</p>
     <button
       type="button"
-      class="rounded-md border border-app-border px-3 py-1 text-sm font-medium text-app-muted hover:bg-app-panel"
+      class="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 transition-all hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900/50 dark:text-slate-300 dark:hover:bg-slate-700"
       (click)="resetFromFiles()"
     >
       Reset to file order
@@ -22,143 +20,177 @@
   </div>
 
   @if (pages().length === 0) {
-    <p class="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-      No pages remain. Add files or keep at least one page to export.
-    </p>
+    <app-alert type="warning" message="No pages remain. Add files or keep at least one page to export." />
   } @else {
     <ul
       cdkDropList
       cdkDropListOrientation="mixed"
-      class="page-reorder-grid grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3"
+      class="page-reorder-grid grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
       (cdkDropListDropped)="onDrop($event)"
     >
       @for (page of pages(); track page.id; let index = $index) {
         <li
           cdkDrag
-          class="page-drag-item rounded-xl border border-app-border bg-app-surface p-3"
+          class="page-drag-item"
           [cdkDragPreviewClass]="'page-drag-preview-card'"
         >
-          <div class="mb-2 flex items-center justify-between">
-            <p class="text-sm font-semibold text-app-fg">Page {{ index + 1 }}</p>
-            <span class="cursor-grab text-app-subtle" cdkDragHandle aria-label="Drag page handle">
-              <ng-icon name="lucideGripVertical" size="16" />
-            </span>
-          </div>
+          <div class="group relative flex flex-col rounded-xl border border-slate-200 bg-white p-3 shadow-sm transition-all duration-200 hover:shadow-md hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800 dark:hover:border-slate-600">
+            <!-- Header -->
+            <div class="mb-2 flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="cursor-grab text-slate-400 hover:text-slate-600 dark:hover:text-slate-300" cdkDragHandle>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="9" cy="6" r="1.5" fill="currentColor"/>
+                    <circle cx="15" cy="6" r="1.5" fill="currentColor"/>
+                    <circle cx="9" cy="12" r="1.5" fill="currentColor"/>
+                    <circle cx="15" cy="12" r="1.5" fill="currentColor"/>
+                    <circle cx="9" cy="18" r="1.5" fill="currentColor"/>
+                    <circle cx="15" cy="18" r="1.5" fill="currentColor"/>
+                  </svg>
+                </span>
+                <span class="text-sm font-semibold text-slate-900 dark:text-white">Page {{ index + 1 }}</span>
+              </div>
+              <span class="rounded bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600 dark:bg-slate-700 dark:text-slate-400">
+                {{ page.rotation }}°
+              </span>
+            </div>
 
-          <div class="mb-3 w-full aspect-[4/3] overflow-hidden rounded-md border border-app-border bg-app-panel">
-            @if (isPdf(page.sourceType)) {
-              @if (getPdfPagePreview(page) | async; as preview) {
-                <img
-                  [src]="preview"
-                  alt="PDF page preview"
-                  class="h-full w-full object-contain transition-transform duration-150"
-                  [style.transform]="'rotate(' + page.rotation + 'deg)'"
-                />
+            <!-- Preview Area -->
+            <div class="mb-3 w-full aspect-[4/3] overflow-hidden rounded-lg border border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-900/50">
+              @if (page.sourceType === 'application/pdf') {
+                @if (getPdfPagePreview(page) | async; as preview) {
+                  <img 
+                    [src]="preview" 
+                    alt="PDF page preview" 
+                    class="h-full w-full object-contain transition-transform duration-150"
+                    [style.transform]="'rotate(' + page.rotation + 'deg)'" 
+                  />
+                } @else {
+                  <div class="flex h-full items-center justify-center text-xs text-slate-400">Loading...</div>
+                }
               } @else {
-                <div class="flex h-full items-center justify-center text-sm text-app-muted">Loading PDF page...</div>
+                <img 
+                  [src]="page.previewUrl" 
+                  alt="Page preview" 
+                  class="h-full w-full object-contain transition-transform duration-150"
+                  [style.transform]="'rotate(' + page.rotation + 'deg)'" 
+                />
               }
-            } @else {
-              <img
-                [src]="page.previewUrl"
-                alt="Page preview"
-                class="h-full w-full object-contain transition-transform duration-150"
-                [style.transform]="'rotate(' + page.rotation + 'deg)'"
-              />
-            }
-          </div>
+            </div>
 
-          <p class="mb-2 line-clamp-1 text-sm text-app-muted">{{ page.sourceFileName }}</p>
-          <p class="mb-3 text-sm text-app-muted">Rotation: {{ page.rotation }}&deg;</p>
+            <!-- Source Info -->
+            <p class="mb-3 truncate text-xs text-slate-500 dark:text-slate-400" [title]="page.sourceFileName">
+              {{ page.sourceFileName }}
+            </p>
 
-          <div class="grid grid-cols-2 gap-2">
-            <button
-              type="button"
-              class="inline-flex items-center justify-center gap-1 rounded-md border border-app-border px-2 py-1 text-sm text-app-muted"
-              (click)="moveUp(index)"
-              [disabled]="index === 0"
-              [attr.aria-label]="'Move page ' + (index + 1) + ' up'"
-            >
-              <ng-icon name="lucideArrowUp" size="14" />
-              Up
-            </button>
-            <button
-              type="button"
-              class="inline-flex items-center justify-center gap-1 rounded-md border border-app-border px-2 py-1 text-sm text-app-muted"
-              (click)="moveDown(index)"
-              [disabled]="index === pages().length - 1"
-              [attr.aria-label]="'Move page ' + (index + 1) + ' down'"
-            >
-              <ng-icon name="lucideArrowDown" size="14" />
-              Down
-            </button>
-            <button
-              type="button"
-              class="inline-flex items-center justify-center gap-1 rounded-md border border-app-border px-2 py-1 text-sm text-app-muted"
-              (click)="rotateLeft(page.id)"
-              [attr.aria-label]="'Rotate page ' + (index + 1) + ' left'"
-            >
-              <ng-icon name="lucideRotateCcw" size="14" />
-              Left
-            </button>
-            <button
-              type="button"
-              class="inline-flex items-center justify-center gap-1 rounded-md border border-app-border px-2 py-1 text-sm text-app-muted"
-              (click)="rotateRight(page.id)"
-              [attr.aria-label]="'Rotate page ' + (index + 1) + ' right'"
-            >
-              <ng-icon name="lucideRotateCw" size="14" />
-              Right
-            </button>
-            <button
-              type="button"
-              class="col-span-2 inline-flex items-center justify-center gap-1 rounded-md border border-rose-300 px-2 py-1 text-sm text-rose-700"
-              (click)="removePage(page.id)"
-              [attr.aria-label]="'Remove page ' + (index + 1)"
-            >
-              <ng-icon name="lucideTrash2" size="14" />
-              Remove Page
-            </button>
-          </div>
+            <!-- Action Buttons -->
+            <div class="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                class="inline-flex items-center justify-center gap-1 rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-xs font-medium text-slate-700 transition-all hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900/50 dark:text-slate-300 dark:hover:bg-slate-700"
+                [disabled]="index === 0"
+                [class.opacity-40]="index === 0"
+                [class.cursor-not-allowed]="index === 0"
+                [attr.aria-label]="'Move page ' + (index + 1) + ' up'"
+                (click)="moveUp(index)"
+              >
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="18 15 12 9 6 15"/>
+                </svg>
+                Up
+              </button>
+              
+              <button
+                type="button"
+                class="inline-flex items-center justify-center gap-1 rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-xs font-medium text-slate-700 transition-all hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900/50 dark:text-slate-300 dark:hover:bg-slate-700"
+                [disabled]="index === pages().length - 1"
+                [class.opacity-40]="index === pages().length - 1"
+                [class.cursor-not-allowed]="index === pages().length - 1"
+                [attr.aria-label]="'Move page ' + (index + 1) + ' down'"
+                (click)="moveDown(index)"
+              >
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="6 9 12 15 18 9"/>
+                </svg>
+                Down
+              </button>
+              
+              <button
+                type="button"
+                class="inline-flex items-center justify-center gap-1 rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-xs font-medium text-slate-700 transition-all hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900/50 dark:text-slate-300 dark:hover:bg-slate-700"
+                [attr.aria-label]="'Rotate page ' + (index + 1) + ' left'"
+                (click)="rotateLeft(page.id)"
+              >
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="1 4 1 10 7 10"/>
+                  <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+                </svg>
+                ↺
+              </button>
+              
+              <button
+                type="button"
+                class="inline-flex items-center justify-center gap-1 rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-xs font-medium text-slate-700 transition-all hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900/50 dark:text-slate-300 dark:hover:bg-slate-700"
+                [attr.aria-label]="'Rotate page ' + (index + 1) + ' right'"
+                (click)="rotateRight(page.id)"
+              >
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="23 4 23 10 17 10"/>
+                  <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+                </svg>
+                ↻
+              </button>
+              
+              <button
+                type="button"
+                class="col-span-2 inline-flex items-center justify-center gap-1 rounded-lg border border-red-200 bg-white px-2 py-1.5 text-xs font-medium text-red-600 transition-all hover:bg-red-50 dark:border-red-800 dark:bg-red-900/20 dark:text-red-400 dark:hover:bg-red-900/40"
+                [attr.aria-label]="'Remove page ' + (index + 1)"
+                (click)="removePage(page.id)"
+              >
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="3 6 5 6 21 6"/>
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                </svg>
+                Remove Page
+              </button>
+            </div>
 
-          <ng-template cdkDragPreview>
-            <div class="page-drag-preview-card rounded-xl border border-sky-200 bg-app-surface p-3 shadow-xl">
-              <div class="flex items-center gap-3">
-                <div class="w-16 aspect-[4/3] overflow-hidden rounded border border-app-border bg-app-panel">
-                  @if (isPdf(page.sourceType)) {
-                    @if (getPdfPagePreview(page) | async; as preview) {
-                      <img [src]="preview" alt="PDF page preview" class="h-full w-full object-contain" />
+            <ng-template cdkDragPreview>
+              <div class="page-drag-preview-card rounded-xl border border-sky-200 bg-white p-3 shadow-2xl dark:bg-slate-800">
+                <div class="flex items-center gap-3">
+                  <div class="w-16 aspect-[4/3] overflow-hidden rounded-lg border border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-900">
+                    @if (page.sourceType === 'application/pdf') {
+                      @if (getPdfPagePreview(page) | async; as preview) {
+                        <img [src]="preview" alt="PDF page preview" class="h-full w-full object-contain" />
+                      } @else {
+                        <div class="flex h-full items-center justify-center text-xs text-slate-400">PDF</div>
+                      }
                     } @else {
-                      <div class="flex h-full items-center justify-center text-xs text-app-muted">PDF</div>
+                      <img [src]="page.previewUrl" alt="Page preview" class="h-full w-full object-contain" />
                     }
-                  } @else {
-                    <img [src]="page.previewUrl" alt="Page preview" class="h-full w-full object-contain" />
-                  }
-                </div>
-                <div>
-                  <p class="text-sm font-semibold text-app-fg">Page {{ index + 1 }}</p>
-                  <p class="text-sm text-app-muted">{{ page.sourceFileName }}</p>
+                  </div>
+                  <div>
+                    <p class="text-sm font-semibold text-slate-900 dark:text-white">Page {{ index + 1 }}</p>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">{{ page.sourceFileName }}</p>
+                  </div>
                 </div>
               </div>
-            </div>
-          </ng-template>
+            </ng-template>
 
-          <ng-template cdkDragPlaceholder>
-            <div class="page-drag-placeholder h-[286px] rounded-xl border-2 border-dashed border-sky-300 bg-sky-50"></div>
-          </ng-template>
+            <ng-template cdkDragPlaceholder>
+              <div class="page-drag-placeholder h-[280px] rounded-xl border-2 border-dashed border-sky-300 bg-sky-50/50 dark:bg-sky-900/20"></div>
+            </ng-template>
+          </div>
         </li>
       }
     </ul>
   }
 
-  <div class="flex items-center justify-between">
-    <a routerLink="/files" class="text-sm font-medium text-app-muted underline">Back to file order</a>
-    <button
-      type="button"
-      class="rounded-lg bg-sky-600 px-5 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:bg-app-border"
-      [disabled]="!documentEditor.hasPages()"
-      (click)="goToExport()"
-    >
-      Continue to export
-    </button>
-  </div>
+  <app-page-footer
+    backLink="/files"
+    backLabel="Back to file order"
+    [continueLabel]="'Continue to export'"
+    [continueDisabled]="!documentEditor.hasPages()"
+    (continue)="goToExport()"
+  />
 </section>

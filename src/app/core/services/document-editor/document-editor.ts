@@ -1,7 +1,7 @@
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { PDFDocument } from 'pdf-lib';
-import { ExportOptions, ExportPageSize, ExportQuality } from '../../models/export-options';
+import { ExportOptions, ExportPageSize, ExportQuality, ExportOrientation } from '../../models/export-options';
 import { ImportedFile } from '../../models/imported-file';
 import { InvalidFile } from '../../models/invalid-file';
 import { PageItem } from '../../models/page-item';
@@ -55,6 +55,7 @@ export class DocumentEditor {
     fileName: 'merged-document',
     pageSize: 'original',
     quality: 'high',
+    orientation: 'auto',
   });
   readonly exportOptions = this._exportOptions.asReadonly();
 
@@ -263,6 +264,10 @@ export class DocumentEditor {
 
   setExportQuality(quality: ExportQuality): void {
     this._exportOptions.update((options) => ({ ...options, quality }));
+  }
+
+  setExportOrientation(orientation: ExportOrientation): void {
+    this._exportOptions.update((options) => ({ ...options, orientation }));
   }
 
   rebuildPagesFromFiles(options?: { force?: boolean }): void {
