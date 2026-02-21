@@ -6,26 +6,36 @@
     description="Choose your output options and export one merged PDF. Original page size preserves each source page exactly. Standard paper options will fit each page into your selected format."
   />
 
-  <div class="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-800">
+  <form [formGroup]="exportForm" class="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-800">
     <label class="block space-y-2">
       <span class="text-sm font-medium text-slate-700 dark:text-slate-300">File name</span>
       <input
         type="text"
+        name="fileName"
         class="w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20 dark:border-slate-700 dark:bg-slate-900/50 dark:text-white dark:placeholder:text-slate-500"
-        [ngModel]="exportOptions().fileName"
-        (ngModelChange)="onFileNameChange($event)"
+        formControlName="fileName"
         placeholder="merged-document"
       />
+      @if (exportForm.controls.fileName.invalid && exportForm.controls.fileName.touched) {
+        <span class="text-xs text-red-600 dark:text-red-400">
+          @if (exportForm.controls.fileName.hasError('required')) {
+            File name is required.
+          } @else if (exportForm.controls.fileName.hasError('maxlength')) {
+            File name must be 200 characters or less.
+          } @else if (exportForm.controls.fileName.hasError('pattern')) {
+            File name contains invalid characters.
+          }
+        </span>
+      }
       <span class="text-xs text-slate-500 dark:text-slate-400">The exported file will be saved as .pdf automatically.</span>
     </label>
 
     <label class="block space-y-2">
       <span class="text-sm font-medium text-slate-700 dark:text-slate-300">Page size</span>
       <select
+        name="pageSize"
         class="w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20 dark:border-slate-700 dark:bg-slate-900/50 dark:text-white"
-        [ngModel]="exportOptions().pageSize"
-        (ngModelChange)="onPageSizeChange($event)"
-        [disabled]="previewLoading() || isExporting()"
+        formControlName="pageSize"
       >
         <option value="original">Original (source size)</option>
         <option value="a3">A3 (297 x 420 mm)</option>
@@ -43,10 +53,9 @@
     <label class="block space-y-2">
       <span class="text-sm font-medium text-slate-700 dark:text-slate-300">Orientation</span>
       <select
+        name="orientation"
         class="w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20 dark:border-slate-700 dark:bg-slate-900/50 dark:text-white"
-        [ngModel]="exportOptions().orientation"
-        (ngModelChange)="onOrientationChange($event)"
-        [disabled]="previewLoading() || isExporting()"
+        formControlName="orientation"
       >
         <option value="auto">Auto (match source)</option>
         <option value="portrait">Portrait (tall)</option>
@@ -58,10 +67,9 @@
     <label class="block space-y-2">
       <span class="text-sm font-medium text-slate-700 dark:text-slate-300">Image quality</span>
       <select
+        name="quality"
         class="w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20 dark:border-slate-700 dark:bg-slate-900/50 dark:text-white"
-        [ngModel]="exportOptions().quality"
-        (ngModelChange)="onQualityChange($event)"
-        [disabled]="previewLoading() || isExporting()"
+        formControlName="quality"
       >
         <option value="high">High (best detail, larger file)</option>
         <option value="medium">Medium (balanced)</option>
@@ -69,7 +77,7 @@
       </select>
       <span class="text-xs text-slate-500 dark:text-slate-400">Quality affects image pages only.</span>
     </label>
-  </div>
+  </form>
 
   <section class="rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-800">
     <div class="mb-4 flex flex-wrap items-center justify-between gap-3">

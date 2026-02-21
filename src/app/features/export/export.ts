@@ -1,5 +1,8 @@
-import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { Component, OnDestroy, OnInit, inject, signal, DestroyRef, Injector } from '@angular/core';
+import { FormGroup, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { combineLatest } from 'rxjs';
+import { toObservable } from '@angular/core/rxjs-interop';
 import { ExportPageSize, ExportQuality, ExportOrientation } from '../../core/models/export-options';
 import { DocumentEditor } from '../../core/services/document-editor/document-editor';
 import { PdfComposer } from '../../core/services/pdf-composer/pdf-composer';
@@ -12,7 +15,7 @@ type PreviewMode = 'quick' | 'full';
 
 @Component({
   selector: 'app-export-page',
-  imports: [FormsModule, PageHeader, PageFooter, Alert],
+  imports: [ReactiveFormsModule, PageHeader, PageFooter, Alert],
   templateUrl: './export.html',
   styleUrl: './export.css',
 })
@@ -20,6 +23,8 @@ export class Export implements OnInit, OnDestroy {
   protected readonly documentEditor = inject(DocumentEditor);
   private readonly pdfComposer = inject(PdfComposer);
   private readonly pdfPreview = inject(PdfPreview);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly injector = inject(Injector);
 
   protected readonly exportOptions = this.documentEditor.exportOptions;
   protected readonly isExporting = signal(false);
@@ -33,11 +38,20 @@ export class Export implements OnInit, OnDestroy {
 
   protected readonly FULL_PREVIEW_MAX_PAGES = 24;
 
+  protected readonly exportForm = new FormGroup({
+    fileName: new FormControl('', [Validators.required, Validators.maxLength(200), Validators.pattern(/^[^<>:"|?*]*$/)]),
+    pageSize: new FormControl<ExportPageSize>('original', [Validators.required]),
+    orientation: new FormControl<ExportOrientation>('auto', [Validators.required]),
+    quality: new FormControl<ExportQuality>('high', [Validators.required]),
+  });
+
   private previewRefreshTimer: ReturnType<typeof setTimeout> | null = null;
   private previewRequestId = 0;
   private lastPreviewKey = '';
 
   ngOnInit(): void {
+    this.initializeForm();
+    this.setupFormSubscriptions();
     this.schedulePreviewRefresh();
   }
 
@@ -48,6 +62,66 @@ export class Export implements OnInit, OnDestroy {
     }
 
     this.clearPreviewUrls();
+  }
+
+  private initializeForm(): void {
+    const options = this.exportOptions();
+    this.exportForm.patchValue({
+      fileName: options.fileName,
+      pageSize: options.pageSize,
+      orientation: options.orientation,
+      quality: options.quality,
+    });
+  }
+
+  private setupFormSubscriptions(): void {
+    this.exportForm.controls.fileName.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((value) => {
+        if (value !== null && value !== this.exportOptions().fileName) {
+          this.documentEditor.setExportFileName(value);
+        }
+      });
+
+    this.exportForm.controls.pageSize.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((value) => {
+        if (value !== null && value !== this.exportOptions().pageSize) {
+          this.documentEditor.setExportPageSize(value);
+          this.handlePreviewOptionChange();
+        }
+      });
+
+    this.exportForm.controls.orientation.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((value) => {
+        if (value !== null && value !== this.exportOptions().orientation) {
+          this.documentEditor.setExportOrientation(value);
+          this.handlePreviewOptionChange();
+        }
+      });
+
+    this.exportForm.controls.quality.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((value) => {
+        if (value !== null && value !== this.exportOptions().quality) {
+          this.documentEditor.setExportQuality(value);
+          this.handlePreviewOptionChange();
+        }
+      });
+
+    const previewLoading$ = toObservable(this.previewLoading, { injector: this.injector });
+    const isExporting$ = toObservable(this.isExporting, { injector: this.injector });
+
+    combineLatest([previewLoading$, isExporting$])
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(([loading, exporting]) => {
+        if (loading || exporting) {
+          this.exportForm.disable();
+        } else {
+          this.exportForm.enable();
+        }
+      });
   }
 
   async exportPdf(): Promise<void> {
@@ -78,25 +152,6 @@ export class Export implements OnInit, OnDestroy {
     } finally {
       this.isExporting.set(false);
     }
-  }
-
-  onFileNameChange(value: string): void {
-    this.documentEditor.setExportFileName(value);
-  }
-
-  onPageSizeChange(value: ExportPageSize): void {
-    this.documentEditor.setExportPageSize(value);
-    this.handlePreviewOptionChange();
-  }
-
-  onQualityChange(value: ExportQuality): void {
-    this.documentEditor.setExportQuality(value);
-    this.handlePreviewOptionChange();
-  }
-
-  onOrientationChange(value: ExportOrientation): void {
-    this.documentEditor.setExportOrientation(value);
-    this.handlePreviewOptionChange();
   }
 
   onPreviewModeChange(value: PreviewMode): void {
