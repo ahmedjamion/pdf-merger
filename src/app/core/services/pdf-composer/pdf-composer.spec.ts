@@ -54,6 +54,7 @@ describe('PdfComposer', () => {
       fileName: 'out',
       pageSize: 'a4',
       quality: 'high',
+      orientation: 'portrait',
     });
 
     const output = await PDFDocument.load(bytes);
