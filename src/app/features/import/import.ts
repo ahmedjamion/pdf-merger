@@ -6,14 +6,13 @@ import { lucideCircleAlert } from '@ng-icons/lucide';
 import { DocumentEditor } from '../../core/services/document-editor/document-editor';
 import { PdfPreview } from '../../core/services/pdf-preview/pdf-preview';
 import { PageHeader } from '../../shared/components/page-header/page-header';
-import { PageFooter } from '../../shared/components/page-footer/page-footer';
 import { DropZone } from '../../shared/components/drop-zone/drop-zone';
 import { FileCard } from '../../shared/components/file-card/file-card';
 import { Alert } from '../../shared/components/alert/alert';
 
 @Component({
   selector: 'app-import-page',
-  imports: [DecimalPipe, AsyncPipe, NgIcon, PageHeader, PageFooter, DropZone, FileCard, Alert],
+  imports: [DecimalPipe, AsyncPipe, NgIcon, PageHeader, DropZone, FileCard, Alert],
   providers: [provideIcons({ lucideCircleAlert })],
   templateUrl: './import.html',
   styleUrl: './import.css',

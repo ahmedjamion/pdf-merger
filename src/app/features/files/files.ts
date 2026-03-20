@@ -6,12 +6,26 @@ import { ImportedFile } from '../../core/models/imported-file';
 import { DocumentEditor } from '../../core/services/document-editor/document-editor';
 import { PdfPreview } from '../../core/services/pdf-preview/pdf-preview';
 import { PageHeader } from '../../shared/components/page-header/page-header';
-import { PageFooter } from '../../shared/components/page-footer/page-footer';
 import { Alert } from '../../shared/components/alert/alert';
+import { provideIcons, NgIcon } from '@ng-icons/core';
+import {
+  lucideChevronLeft,
+  lucideChevronRight,
+  lucideGripVertical,
+  lucideX,
+} from '@ng-icons/lucide';
 
 @Component({
   selector: 'app-files-page',
-  imports: [DragDropModule, AsyncPipe, PageHeader, PageFooter, Alert],
+  imports: [DragDropModule, AsyncPipe, PageHeader, Alert, NgIcon],
+  providers: [
+    provideIcons({
+      lucideGripVertical,
+      lucideX,
+      lucideChevronLeft,
+      lucideChevronRight,
+    }),
+  ],
   templateUrl: './files.html',
   styleUrl: './files.css',
 })
