@@ -1,4 +1,4 @@
-<section class="mx-auto flex w-full max-w-5xl flex-col gap-6">
+<section class="mx-auto flex w-full flex-col gap-6">
   <app-page-header
     [step]="2"
     [totalSteps]="4"
@@ -7,19 +7,28 @@
   />
 
   @if (documentEditor.hasManualPageEdits()) {
-    <app-alert type="warning" message="Manual page edits are active. Reordering files will not rebuild pages automatically. Use 'Reset to file order' in Step 3 if you want to regenerate pages from the new file order." />
+    <app-alert
+      type="warning"
+      message="Manual page edits are active. Reordering files will not rebuild pages automatically. Use 'Reset to file order' in Step 3 if you want to regenerate pages from the new file order."
+    />
   }
 
   <p class="sr-only" aria-live="polite">{{ statusMessage() }}</p>
 
-  <div class="rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-800">
+  <div
+    class="rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-800"
+  >
     <div class="mb-4 flex items-center justify-between">
       <p class="text-sm font-semibold text-slate-900 dark:text-white">Current file order</p>
-      <p class="text-sm text-slate-500 dark:text-slate-400">{{ files().length }} file{{ files().length !== 1 ? 's' : '' }}</p>
+      <p class="text-sm text-slate-500 dark:text-slate-400">
+        {{ files().length }} file{{ files().length !== 1 ? 's' : '' }}
+      </p>
     </div>
 
     @if (files().length === 0) {
-      <p class="py-8 text-center text-sm text-slate-500 dark:text-slate-400">No files available. Add files first.</p>
+      <p class="py-8 text-center text-sm text-slate-500 dark:text-slate-400">
+        No files available. Add files first.
+      </p>
     } @else {
       <ul
         cdkDropList
@@ -35,14 +44,25 @@
           >
             <div class="mb-3 flex items-center justify-between gap-2">
               <div class="flex min-w-0 items-center gap-2">
-                <span class="cursor-grab text-slate-400 hover:text-slate-600 dark:hover:text-slate-300" cdkDragHandle aria-label="Drag handle">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="9" cy="6" r="1.5" fill="currentColor"/>
-                    <circle cx="15" cy="6" r="1.5" fill="currentColor"/>
-                    <circle cx="9" cy="12" r="1.5" fill="currentColor"/>
-                    <circle cx="15" cy="12" r="1.5" fill="currentColor"/>
-                    <circle cx="9" cy="18" r="1.5" fill="currentColor"/>
-                    <circle cx="15" cy="18" r="1.5" fill="currentColor"/>
+                <span
+                  class="cursor-grab text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
+                  cdkDragHandle
+                  aria-label="Drag handle"
+                >
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <circle cx="9" cy="6" r="1.5" fill="currentColor" />
+                    <circle cx="15" cy="6" r="1.5" fill="currentColor" />
+                    <circle cx="9" cy="12" r="1.5" fill="currentColor" />
+                    <circle cx="15" cy="12" r="1.5" fill="currentColor" />
+                    <circle cx="9" cy="18" r="1.5" fill="currentColor" />
+                    <circle cx="15" cy="18" r="1.5" fill="currentColor" />
                   </svg>
                 </span>
                 <p class="truncate text-sm font-semibold text-slate-900 dark:text-white">
@@ -51,7 +71,9 @@
               </div>
             </div>
 
-            <div class="mb-3 aspect-4/3 overflow-hidden rounded-lg border border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-900/50">
+            <div
+              class="mb-3 aspect-4/3 overflow-hidden rounded-lg border border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-900/50"
+            >
               @if (file.type === 'application/pdf') {
                 @if (getPdfFilePreview(file) | async; as preview) {
                   <img [src]="preview" alt="PDF preview" class="h-full w-full object-contain" />
@@ -61,19 +83,32 @@
                   </div>
                 }
               } @else {
-                <img [src]="file.previewUrl" alt="File preview" class="h-full w-full object-contain" />
+                <img
+                  [src]="file.previewUrl"
+                  alt="File preview"
+                  class="h-full w-full object-contain"
+                />
               }
             </div>
 
-            <p class="mb-3 mt-auto flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <p
+              class="mb-3 mt-auto flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400"
+            >
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
                 @if (file.type === 'application/pdf') {
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                  <polyline points="14 2 14 8 20 8"/>
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                  <polyline points="14 2 14 8 20 8" />
                 } @else {
-                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-                  <circle cx="8.5" cy="8.5" r="1.5"/>
-                  <polyline points="21 15 16 10 5 21"/>
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                  <circle cx="8.5" cy="8.5" r="1.5" />
+                  <polyline points="21 15 16 10 5 21" />
                 }
               </svg>
               {{ file.pageCount }} page{{ file.pageCount !== 1 ? 's' : '' }}
@@ -89,8 +124,15 @@
                 [attr.aria-label]="'Move ' + file.name + ' up'"
                 (click)="moveUp(index)"
               >
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <polyline points="18 15 12 9 6 15"/>
+                <svg
+                  width="12"
+                  height="12"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <polyline points="18 15 12 9 6 15" />
                 </svg>
                 Up
               </button>
@@ -103,8 +145,15 @@
                 [attr.aria-label]="'Move ' + file.name + ' down'"
                 (click)="moveDown(index)"
               >
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <polyline points="6 9 12 15 18 9"/>
+                <svg
+                  width="12"
+                  height="12"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <polyline points="6 9 12 15 18 9" />
                 </svg>
                 Down
               </button>
@@ -114,38 +163,67 @@
                 [attr.aria-label]="'Remove ' + file.name"
                 (click)="removeFile(file.id)"
               >
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <polyline points="3 6 5 6 21 6"/>
-                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                <svg
+                  width="12"
+                  height="12"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <polyline points="3 6 5 6 21 6" />
+                  <path
+                    d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+                  />
                 </svg>
                 Remove
               </button>
             </div>
 
             <ng-template cdkDragPreview>
-              <div class="drag-preview-card rounded-xl border border-sky-200 bg-white p-4 shadow-2xl dark:bg-slate-800">
+              <div
+                class="drag-preview-card rounded-xl border border-sky-200 bg-white p-4 shadow-2xl dark:bg-slate-800"
+              >
                 <div class="flex items-center gap-3">
-                  <div class="w-16 aspect-4/3 overflow-hidden rounded-lg border border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-900">
+                  <div
+                    class="w-16 aspect-4/3 overflow-hidden rounded-lg border border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-900"
+                  >
                     @if (file.type === 'application/pdf') {
                       @if (getPdfFilePreview(file) | async; as preview) {
-                        <img [src]="preview" alt="PDF preview" class="h-full w-full object-contain" />
+                        <img
+                          [src]="preview"
+                          alt="PDF preview"
+                          class="h-full w-full object-contain"
+                        />
                       } @else {
-                        <div class="flex h-full items-center justify-center text-xs text-slate-400">PDF</div>
+                        <div class="flex h-full items-center justify-center text-xs text-slate-400">
+                          PDF
+                        </div>
                       }
                     } @else {
-                      <img [src]="file.previewUrl" alt="File preview" class="h-full w-full object-contain" />
+                      <img
+                        [src]="file.previewUrl"
+                        alt="File preview"
+                        class="h-full w-full object-contain"
+                      />
                     }
                   </div>
                   <div>
-                    <p class="text-sm font-semibold text-slate-900 dark:text-white">{{ file.name }}</p>
-                    <p class="text-xs text-slate-500 dark:text-slate-400">{{ file.pageCount }} page{{ file.pageCount !== 1 ? 's' : '' }}</p>
+                    <p class="text-sm font-semibold text-slate-900 dark:text-white">
+                      {{ file.name }}
+                    </p>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">
+                      {{ file.pageCount }} page{{ file.pageCount !== 1 ? 's' : '' }}
+                    </p>
                   </div>
                 </div>
               </div>
             </ng-template>
 
             <ng-template cdkDragPlaceholder>
-              <div class="drag-placeholder w-full aspect-4/3 rounded-xl border-2 border-dashed border-sky-300 bg-sky-50/50 dark:bg-sky-900/20"></div>
+              <div
+                class="drag-placeholder w-full aspect-4/3 rounded-xl border-2 border-dashed border-sky-300 bg-sky-50/50 dark:bg-sky-900/20"
+              ></div>
             </ng-template>
           </li>
         }

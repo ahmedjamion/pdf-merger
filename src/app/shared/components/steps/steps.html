@@ -1,0 +1,36 @@
+<nav
+  class="overflow-clip h-full w-3xs hidden sm:flex flex-col items-center justify-center bg-surface"
+>
+  <ul class="flex overflow-hidden flex-col gap-4 p-4">
+    @for (step of steps(); track $index) {
+      <li
+        class="px-3 py-1 rounded-lg outline-primary outline"
+        routerLinkActive="bg-primary text-on-primary"
+      >
+        <a [routerLink]="step.link">{{ step.title }}</a>
+      </li>
+    }
+  </ul>
+</nav>
+
+<nav
+  class="overflow-clip h-auto w-full sm:hidden flex flex-col items-center justify-center bg-surface p-4"
+>
+  <button class="flex" (click)="toggleSteps()">Steps</button>
+  <div
+    class="overflow-hidden transition-[max-height] duration-300"
+    [class.max-h-0]="!isStepsOpen()"
+    [class.max-h-64]="isStepsOpen()"
+  >
+    <ul class="flex flex-col gap-4 p-4">
+      @for (step of steps(); track $index) {
+        <li
+          class="px-3 py-1 rounded-lg outline-primary outline"
+          routerLinkActive="bg-primary text-on-primary"
+        >
+          <a [routerLink]="step.link">{{ step.title }}</a>
+        </li>
+      }
+    </ul>
+  </div>
+</nav>

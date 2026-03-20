@@ -1,12 +1,14 @@
 import { isPlatformBrowser } from '@angular/common';
 import { Component, DOCUMENT, inject, PLATFORM_ID, signal } from '@angular/core';
-import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { NgIcon, provideIcons } from '@ng-icons/core';
+import { provideIcons } from '@ng-icons/core';
 import { lucideMoon, lucideSun } from '@ng-icons/lucide';
+import { Steps } from './shared/components/steps/steps';
+import { Header } from './shared/components/header/header';
+import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, NgIcon],
+  imports: [RouterOutlet, Steps, Header],
   providers: [
     provideIcons({
       lucideSun,
@@ -27,9 +29,10 @@ export class App {
     }
 
     const storedTheme = localStorage.getItem('theme');
-    const prefersDark = typeof window.matchMedia === 'function'
-      ? window.matchMedia('(prefers-color-scheme: dark)').matches
-      : false;
+    const prefersDark =
+      typeof window.matchMedia === 'function'
+        ? window.matchMedia('(prefers-color-scheme: dark)').matches
+        : false;
     const isDark = storedTheme ? storedTheme === 'dark' : prefersDark;
 
     this.isDark.set(isDark);

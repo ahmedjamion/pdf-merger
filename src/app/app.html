@@ -1,78 +1,9 @@
-﻿<div class="min-h-screen bg-app-bg text-app-fg" [class.theme-dark]="isDark()">
-  <header class="border-b border-app-border bg-app-surface">
-    <div class="mx-auto flex w-full max-w-6xl flex-col gap-3 px-4 py-4">
-      <div class="flex items-start justify-between gap-4">
-        <div>
-          <p class="text-sm font-semibold uppercase tracking-wide text-sky-700">PDF Merger</p>
-          <h1 class="text-3xl font-bold">Merge PDFs and images in your browser</h1>
-          <p class="text-base text-app-muted">
-            Workflow: Import files, reorder files, manage pages, then export one merged PDF.
-          </p>
-        </div>
-
-        <button
-          type="button"
-          class="theme-toggle"
-          role="switch"
-          [attr.aria-checked]="isDark()"
-          [attr.aria-label]="isDark() ? 'Switch to light theme' : 'Switch to dark theme'"
-          (click)="toggleTheme()"
-        >
-          <span class="theme-toggle__text">{{ isDark() ? 'Dark' : 'Light' }}</span>
-          <span class="theme-toggle__track" [class.is-dark]="isDark()">
-            <span class="theme-toggle__icon theme-toggle__icon--sun">
-              <ng-icon name="lucideSun" size="11" />
-            </span>
-            <span class="theme-toggle__icon theme-toggle__icon--moon">
-              <ng-icon name="lucideMoon" size="11" />
-            </span>
-            <span class="theme-toggle__thumb" [class.is-dark]="isDark()">
-              @if (isDark()) {
-                <ng-icon name="lucideMoon" size="13" class="theme-toggle__thumb-icon theme-toggle__thumb-icon--moon" />
-              } @else {
-                <ng-icon name="lucideSun" size="13" class="theme-toggle__thumb-icon theme-toggle__thumb-icon--sun" />
-              }
-            </span>
-          </span>
-        </button>
-      </div>
-
-      <nav class="flex flex-wrap gap-2 text-sm">
-        <a
-          routerLink="/import"
-          routerLinkActive="bg-sky-100 text-sky-700"
-          class="rounded-full border border-app-border bg-app-surface px-3 py-1.5 font-medium text-app-muted"
-        >
-          1. Import
-        </a>
-        <a
-          routerLink="/files"
-          routerLinkActive="bg-sky-100 text-sky-700"
-          class="rounded-full border border-app-border bg-app-surface px-3 py-1.5 font-medium text-app-muted"
-        >
-          2. Files
-        </a>
-        <a
-          routerLink="/pages"
-          routerLinkActive="bg-sky-100 text-sky-700"
-          class="rounded-full border border-app-border bg-app-surface px-3 py-1.5 font-medium text-app-muted"
-        >
-          3. Pages
-        </a>
-        <a
-          routerLink="/export"
-          routerLinkActive="bg-sky-100 text-sky-700"
-          class="rounded-full border border-app-border bg-app-surface px-3 py-1.5 font-medium text-app-muted"
-        >
-          4. Export
-        </a>
-      </nav>
-    </div>
-  </header>
-
-  <main class="mx-auto w-full max-w-6xl px-4 py-6">
-    <router-outlet />
-  </main>
+﻿<div class="h-dvh flex flex-col overflow-hidden">
+  <app-header />
+  <div class="flex sm:flex-row flex-col grow overflow-hidden">
+    <app-steps />
+    <main class="grow overflow-auto w-full p-4">
+      <router-outlet />
+    </main>
+  </div>
 </div>
-
-

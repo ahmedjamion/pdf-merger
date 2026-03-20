@@ -1,9 +1,18 @@
-<section class="mx-auto flex w-full max-w-5xl flex-col gap-6">
+<section class="mx-auto flex w-full flex-col gap-6">
   <app-page-header
     [step]="1"
     [totalSteps]="4"
     title="Import your files"
     description="Add PDF or image files by dropping them below or using the browse button. We block duplicates, allow up to 10MB per file, 120MB total upload size, and 400 pages total."
+  />
+
+  <app-drop-zone
+    [isDragging]="isDragging()"
+    [isProcessing]="isImporting()"
+    (fileSelected)="onFileSelected($event)"
+    (dragOver)="onDragOver()"
+    (dragLeave)="onDragLeave()"
+    (drop)="onDrop($event)"
   />
 
   <p class="sr-only" aria-live="polite">
@@ -18,27 +27,18 @@
     <app-alert type="info" message="Processing files and validating page limits..." />
   }
 
-  <app-drop-zone
-    [isDragging]="isDragging()"
-    [isProcessing]="isImporting()"
-    (fileSelected)="onFileSelected($event)"
-    (dragOver)="onDragOver()"
-    (dragLeave)="onDragLeave()"
-    (drop)="onDrop($event)"
-  />
-
-  <section class="space-y-3 rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-800">
-    <div class="flex items-center justify-between">
-      <h2 class="text-lg font-semibold text-slate-900 dark:text-white">Accepted files</h2>
-      <p class="text-sm text-slate-500 dark:text-slate-400">
-        {{ files().length }} file{{ files().length !== 1 ? 's' : '' }} - {{ totalSize() / 1024 / 1024 | number:'1.0-1' }} MB
-      </p>
-    </div>
-
+  <section class="flex flex-col gap-4">
     @if (files().length === 0) {
-      <p class="py-8 text-center text-sm text-slate-500 dark:text-slate-400">No files added yet.</p>
+      <p class="text-center text-sm">No files added yet.</p>
     } @else {
-      <ul class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <div class="flex items-center justify-between">
+        <h2 class="text-lg font-semibold">Accepted files</h2>
+        <p class="text-sm">
+          {{ files().length }} file{{ files().length !== 1 ? 's' : '' }} -
+          {{ totalSize() / 1024 / 1024 | number: '1.0-1' }} MB
+        </p>
+      </div>
+      <ul class="flex flex-wrap gap-4">
         @for (file of files(); track file.id) {
           <li>
             <app-file-card
@@ -51,11 +51,20 @@
           </li>
         }
       </ul>
+
+      <button
+        (click)="goToFiles()"
+        class="self-end px-4 py-2 bg-primary text-on-primary rounded-xl cursor-pointer"
+      >
+        Go To File Arrangement
+      </button>
     }
   </section>
 
   @if (invalidFiles().length > 0) {
-    <section class="space-y-3 rounded-2xl border border-red-200 bg-red-50 p-5 dark:border-red-800 dark:bg-red-900/20">
+    <section
+      class="space-y-3 rounded-2xl border border-red-200 bg-red-50 p-5 dark:border-red-800 dark:bg-red-900/20"
+    >
       <div class="flex items-center justify-between">
         <h2 class="flex items-center gap-2 text-lg font-semibold text-red-800 dark:text-red-200">
           <ng-icon name="lucideCircleAlert" size="18" />
@@ -73,7 +82,9 @@
 
       <ul class="space-y-2">
         @for (item of invalidFiles(); track item.id) {
-          <li class="rounded-lg border border-red-200 bg-white px-4 py-3 dark:border-red-800 dark:bg-red-900/30">
+          <li
+            class="rounded-lg border border-red-200 bg-white px-4 py-3 dark:border-red-800 dark:bg-red-900/30"
+          >
             <p class="text-sm font-medium text-slate-900 dark:text-white">{{ item.name }}</p>
             <p class="text-sm text-red-700 dark:text-red-300">{{ item.reasons.join(' ') }}</p>
           </li>
@@ -81,13 +92,4 @@
       </ul>
     </section>
   }
-
-  <app-page-footer
-    backLink="/files"
-    backLabel="Skip to file ordering"
-    [continueLabel]="'Continue to file ordering'"
-    [continueDisabled]="!documentEditor.hasFiles()"
-    [isLoading]="isImporting()"
-    (continue)="goToFiles()"
-  />
 </section>
