@@ -8,14 +8,13 @@ import { DocumentEditor } from '../../core/services/document-editor/document-edi
 import { PdfComposer } from '../../core/services/pdf-composer/pdf-composer';
 import { PdfPreview } from '../../core/services/pdf-preview/pdf-preview';
 import { PageHeader } from '../../shared/components/page-header/page-header';
-import { PageFooter } from '../../shared/components/page-footer/page-footer';
 import { Alert } from '../../shared/components/alert/alert';
 
 type PreviewMode = 'quick' | 'full';
 
 @Component({
   selector: 'app-export-page',
-  imports: [ReactiveFormsModule, PageHeader, PageFooter, Alert],
+  imports: [ReactiveFormsModule, PageHeader, Alert],
   templateUrl: './export.html',
   styleUrl: './export.css',
 })
@@ -39,7 +38,11 @@ export class Export implements OnInit, OnDestroy {
   protected readonly FULL_PREVIEW_MAX_PAGES = 24;
 
   protected readonly exportForm = new FormGroup({
-    fileName: new FormControl('', [Validators.required, Validators.maxLength(200), Validators.pattern(/^[^<>:"|?*]*$/)]),
+    fileName: new FormControl('', [
+      Validators.required,
+      Validators.maxLength(200),
+      Validators.pattern(/^[^<>:"|?*]*$/),
+    ]),
     pageSize: new FormControl<ExportPageSize>('original', [Validators.required]),
     orientation: new FormControl<ExportOrientation>('auto', [Validators.required]),
     quality: new FormControl<ExportQuality>('high', [Validators.required]),
@@ -143,7 +146,9 @@ export class Export implements OnInit, OnDestroy {
 
       const pdfBytes = Uint8Array.from(bytes);
       const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-      const normalizedName = this.exportOptions().fileName.trim().replace(/\.pdf$/i, '');
+      const normalizedName = this.exportOptions()
+        .fileName.trim()
+        .replace(/\.pdf$/i, '');
       const safeFileName = normalizedName.length > 0 ? normalizedName : 'merged-document';
       const fileName = `${safeFileName}.pdf`;
       this.downloadBlob(blob, fileName);
@@ -216,7 +221,11 @@ export class Export implements OnInit, OnDestroy {
     const maxPages = isQuick ? 1 : this.FULL_PREVIEW_MAX_PAGES;
     const previewKey = this.createPreviewKey(maxPages);
 
-    if (previewKey === this.lastPreviewKey && this.previewUrls().length > 0 && !this.previewNeedsRefresh()) {
+    if (
+      previewKey === this.lastPreviewKey &&
+      this.previewUrls().length > 0 &&
+      !this.previewNeedsRefresh()
+    ) {
       return;
     }
 

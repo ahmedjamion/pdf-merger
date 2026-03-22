@@ -1,6 +1,4 @@
-<nav
-  class="overflow-clip h-full w-3xs hidden sm:flex flex-col items-center justify-center bg-surface"
->
+<nav class="overflow-clip h-full w-3xs hidden sm:flex flex-col items-center bg-surface">
   <ul class="flex overflow-hidden flex-col gap-4 p-4">
     @for (step of steps(); track $index) {
       <li
@@ -16,7 +14,15 @@
 <nav
   class="overflow-clip h-auto w-full sm:hidden flex flex-col items-center justify-center bg-surface p-4"
 >
-  <button class="flex" (click)="toggleSteps()">Steps</button>
+  <button class="flex w-full items-center justify-between" (click)="toggleSteps()">
+    <span>All Steps</span>
+    <ng-icon
+      name="lucideChevronDown"
+      [class.rotate-180]="isStepsOpen()"
+      class="transition-all duration-300 ease-in-out"
+      size="24"
+    />
+  </button>
   <div
     class="overflow-hidden transition-[max-height] duration-300"
     [class.max-h-0]="!isStepsOpen()"

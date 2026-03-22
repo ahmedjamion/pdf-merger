@@ -3,6 +3,7 @@
     [step]="3"
     [totalSteps]="4"
     title="Manage pages"
+    previousPage="file"
     description="Drag to reorder individual pages across all files. For PDFs, each source page is listed separately. For image files, each image appears as one page. Rotate or remove pages before export."
   />
 
@@ -36,7 +37,7 @@
       @for (page of pages(); track page.id; let index = $index) {
         <li
           cdkDrag
-          class="page-drag-item bg-surface text-on-surface rounded-xl overflow-clip max-w-3xs"
+          class="page-drag-item bg-surface text-on-surface rounded-xl overflow-clip"
           [cdkDragPreviewClass]="'page-drag-preview-card'"
         >
           <!-- Header -->
@@ -186,11 +187,10 @@
     </ul>
   }
 
-  <app-page-footer
-    backLink="/files"
-    backLabel="Back to file order"
-    [continueLabel]="'Continue to export'"
-    [continueDisabled]="!documentEditor.hasPages()"
-    (continue)="goToExport()"
-  />
+  <button
+    (click)="goToExport()"
+    class="self-end px-4 py-2 bg-primary text-on-primary rounded-xl cursor-pointer"
+  >
+    Go To Export Page
+  </button>
 </section>

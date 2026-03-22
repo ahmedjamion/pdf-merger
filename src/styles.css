@@ -14,3 +14,14 @@
   --color-surface: #c1d3e4;
   --color-on-surface: #111a3e;
 }
+
+[data-theme='dark'] {
+  --color-primary: #4076b8;
+  --color-on-primary: #ecf6f8;
+
+  --color-background: #111a3e;
+  --color-on-background: #e4eef0;
+
+  --color-surface: #1a3f71;
+  --color-on-surface: #c1d3e4;
+}

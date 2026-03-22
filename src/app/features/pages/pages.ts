@@ -6,12 +6,11 @@ import { PageItem } from '../../core/models/page-item';
 import { DocumentEditor } from '../../core/services/document-editor/document-editor';
 import { PdfPreview } from '../../core/services/pdf-preview/pdf-preview';
 import { PageHeader } from '../../shared/components/page-header/page-header';
-import { PageFooter } from '../../shared/components/page-footer/page-footer';
 import { Alert } from '../../shared/components/alert/alert';
 
 @Component({
   selector: 'app-pages-page',
-  imports: [DragDropModule, AsyncPipe, PageHeader, PageFooter, Alert],
+  imports: [DragDropModule, AsyncPipe, PageHeader, Alert],
   templateUrl: './pages.html',
   styleUrl: './pages.css',
 })

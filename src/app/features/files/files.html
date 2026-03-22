@@ -3,6 +3,7 @@
     [step]="2"
     [totalSteps]="4"
     title="Reorder files"
+    previousPage="import"
     description="Drag files to arrange their base order. PDF files will later expand into pages in this order. You can also use Move Up and Move Down buttons for keyboard-friendly control."
   />
 
@@ -27,13 +28,13 @@
       <ul
         cdkDropList
         cdkDropListOrientation="mixed"
-        class="reorder-list grid grid-cols-1 gap-3 sm:grid-cols-2"
+        class="reorder-list grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
         (cdkDropListDropped)="onDrop($event)"
       >
         @for (file of files(); track file.id; let index = $index) {
           <li
             cdkDrag
-            class="drag-item flex flex-col max-w-3xs p-2 bg-surface rounded-xl"
+            class="drag-item flex flex-col p-2 bg-surface rounded-xl"
             [cdkDragPreviewClass]="'drag-preview-card'"
           >
             <div class="">

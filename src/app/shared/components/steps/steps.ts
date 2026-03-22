@@ -1,5 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
+import { provideIcons, NgIcon } from '@ng-icons/core';
+import { lucideChevronDown } from '@ng-icons/lucide';
 
 interface Step {
   link: string;
@@ -8,7 +10,12 @@ interface Step {
 
 @Component({
   selector: 'app-steps',
-  imports: [RouterLink, RouterLinkActive],
+  imports: [RouterLink, RouterLinkActive, NgIcon],
+  providers: [
+    provideIcons({
+      lucideChevronDown,
+    }),
+  ],
   templateUrl: './steps.html',
   styleUrl: './steps.css',
 })

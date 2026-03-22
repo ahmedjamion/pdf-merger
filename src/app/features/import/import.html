@@ -38,7 +38,7 @@
           {{ totalSize() / 1024 / 1024 | number: '1.0-1' }} MB
         </p>
       </div>
-      <ul class="flex flex-wrap gap-4">
+      <ul class="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         @for (file of files(); track file.id) {
           <li>
             <app-file-card
@@ -63,16 +63,16 @@
 
   @if (invalidFiles().length > 0) {
     <section
-      class="space-y-3 rounded-2xl border border-red-200 bg-red-50 p-5 dark:border-red-800 dark:bg-red-900/20"
+      class="flex flex-col gap-4 rounded-2xl border border-red-primary bg-surface text-on-surface p-4"
     >
       <div class="flex items-center justify-between">
-        <h2 class="flex items-center gap-2 text-lg font-semibold text-red-800 dark:text-red-200">
+        <h2 class="flex items-center gap-2 text-lg font-semibold">
           <ng-icon name="lucideCircleAlert" size="18" />
           Rejected files
         </h2>
         <button
           type="button"
-          class="text-sm font-medium text-red-700 underline hover:text-red-800 dark:text-red-300 dark:hover:text-red-200"
+          class="text-sm font-medium"
           [disabled]="isImporting()"
           (click)="clearInvalidFiles()"
         >
@@ -80,13 +80,11 @@
         </button>
       </div>
 
-      <ul class="space-y-2">
+      <ul class="flex flex-col gap-2">
         @for (item of invalidFiles(); track item.id) {
-          <li
-            class="rounded-lg border border-red-200 bg-white px-4 py-3 dark:border-red-800 dark:bg-red-900/30"
-          >
-            <p class="text-sm font-medium text-slate-900 dark:text-white">{{ item.name }}</p>
-            <p class="text-sm text-red-700 dark:text-red-300">{{ item.reasons.join(' ') }}</p>
+          <li class="rounded-lg border border-primary bg-surface text-on-surface p-4">
+            <p class="text-sm font-medium">{{ item.name }}</p>
+            <p class="text-sm">{{ item.reasons.join(' ') }}</p>
           </li>
         }
       </ul>
