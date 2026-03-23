@@ -7,10 +7,13 @@ import { DocumentEditor } from '../../core/services/document-editor/document-edi
 import { PdfPreview } from '../../core/services/pdf-preview/pdf-preview';
 import { PageHeader } from '../../shared/components/page-header/page-header';
 import { Alert } from '../../shared/components/alert/alert';
+import { provideIcons, NgIcon } from '@ng-icons/core';
+import { lucideGripVertical } from '@ng-icons/lucide';
 
 @Component({
   selector: 'app-pages-page',
-  imports: [DragDropModule, AsyncPipe, PageHeader, Alert],
+  imports: [DragDropModule, AsyncPipe, PageHeader, Alert, NgIcon],
+  providers: [provideIcons({ lucideGripVertical })],
   templateUrl: './pages.html',
   styleUrl: './pages.css',
 })

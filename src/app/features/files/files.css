@@ -1,4 +1,4 @@
-﻿:host {
+﻿/* :host {
   display: block;
 }
 
@@ -21,4 +21,10 @@
   cursor: grabbing;
   transform: scale(1.01);
   box-shadow: 0 20px 40px rgba(15, 23, 42, 0.2);
+} */
+
+.cdk-drag-preview {
+  background-color: var(--color-surface);
+  border-radius: var(--radius-xl);
+  padding: 1rem;
 }

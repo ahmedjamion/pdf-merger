@@ -32,22 +32,16 @@
         (cdkDropListDropped)="onDrop($event)"
       >
         @for (file of files(); track file.id; let index = $index) {
-          <li
-            cdkDrag
-            class="drag-item flex flex-col p-2 bg-surface rounded-xl"
-            [cdkDragPreviewClass]="'drag-preview-card'"
-          >
-            <div class="">
-              <div class="flex items-center gap-2">
-                <button
-                  class="cursor-grab flex items-center justify-center"
-                  cdkDragHandle
-                  aria-label="Drag handle"
-                >
-                  <ng-icon name="lucideGripVertical" size="20" />
-                </button>
-                <p class="truncate text-sm font-semibold">{{ index + 1 }}. {{ file.name }}</p>
-              </div>
+          <li cdkDrag class="drag-item flex flex-col p-2 bg-surface rounded-xl">
+            <div class="flex items-center gap-2">
+              <button
+                class="cursor-grab flex items-center justify-center"
+                cdkDragHandle
+                aria-label="Drag handle"
+              >
+                <ng-icon name="lucideGripVertical" size="20" />
+              </button>
+              <p class="truncate text-sm font-semibold">{{ index + 1 }}. {{ file.name }}</p>
             </div>
 
             <div class="">
@@ -108,41 +102,31 @@
             </div>
 
             <ng-template cdkDragPreview>
-              <div class="drag-preview-card">
-                <div class="flex items-center gap-3">
-                  <div class="w-16 aspect-4/3 overflow-hidden">
-                    @if (file.type === 'application/pdf') {
-                      @if (getPdfFilePreview(file) | async; as preview) {
-                        <img
-                          [src]="preview"
-                          alt="PDF preview"
-                          class="h-full w-full object-contain"
-                        />
-                      } @else {
-                        <div class="flex h-full items-center justify-center">PDF</div>
-                      }
+              <div class="flex items-center gap-2">
+                <div class="w-16 aspect-square overflow-clip">
+                  @if (file.type === 'application/pdf') {
+                    @if (getPdfFilePreview(file) | async; as preview) {
+                      <img [src]="preview" alt="PDF preview" class="" />
                     } @else {
-                      <img
-                        [src]="file.previewUrl"
-                        alt="File preview"
-                        class="h-full w-full object-contain"
-                      />
+                      <div class="flex items-center justify-center">PDF</div>
                     }
-                  </div>
-                  <div>
-                    <p class="text-sm font-semibold">
-                      {{ file.name }}
-                    </p>
-                    <p class="text-xs">
-                      {{ file.pageCount }} page{{ file.pageCount !== 1 ? 's' : '' }}
-                    </p>
-                  </div>
+                  } @else {
+                    <img [src]="file.previewUrl" alt="File preview" class="" />
+                  }
+                </div>
+                <div>
+                  <p class="text-sm font-semibold">
+                    {{ file.name }}
+                  </p>
+                  <p class="text-xs">
+                    {{ file.pageCount }} page{{ file.pageCount !== 1 ? 's' : '' }}
+                  </p>
                 </div>
               </div>
             </ng-template>
 
-            <ng-template cdkDragPlaceholder>
-              <div class="drag-placeholder"></div>
+            <ng-template cdkDragPlaceholder [matchSize]="true">
+              <div class="border-2 border-surface rounded-2xl"></div>
             </ng-template>
           </li>
         }
