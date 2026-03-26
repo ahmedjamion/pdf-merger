@@ -304,7 +304,7 @@ export class Export implements OnInit, OnDestroy {
       .join('|');
 
     const options = this.documentEditor.exportOptions();
-    return `${this.previewMode()}:${maxPages}:${options.pageSize}:${options.quality}:${filesKey}:${pagesKey}`;
+    return `${this.previewMode()}:${maxPages}:${options.pageSize}:${options.orientation}:${options.quality}:${filesKey}:${pagesKey}`;
   }
 
   private downloadBlob(blob: Blob, fileName: string): void {

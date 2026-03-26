@@ -2,11 +2,12 @@ import { ChangeDetectionStrategy, Component, input, output } from '@angular/core
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideFileText, lucideImage, lucideTrash2 } from '@ng-icons/lucide';
 import { ImportedFile } from '../../../core/models/imported-file';
+import { Loading } from '../loading/loading';
 
 @Component({
   selector: 'app-file-card',
   standalone: true,
-  imports: [NgIcon],
+  imports: [NgIcon, Loading],
   providers: [provideIcons({ lucideFileText, lucideImage, lucideTrash2 })],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './file-card.html',

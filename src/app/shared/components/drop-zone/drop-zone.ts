@@ -1,11 +1,12 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideUpload, lucideFolderOpen } from '@ng-icons/lucide';
+import { Loading } from '../loading/loading';
 
 @Component({
   selector: 'app-drop-zone',
   standalone: true,
-  imports: [NgIcon],
+  imports: [NgIcon, Loading],
   providers: [provideIcons({ lucideUpload, lucideFolderOpen })],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './drop-zone.html',

@@ -1,0 +1,38 @@
+<div class="relative w-36">
+  <button
+    type="button"
+    class="px-4 py-2 w-full flex items-center justify-around gap-2 border-2 border-on-primary rounded-lg cursor-pointer"
+    [class.open]="isOpen()"
+    (click)="toggle()"
+    aria-haspopup="listbox"
+    [attr.aria-expanded]="isOpen()"
+  >
+    <ng-icon [name]="currentThemeOption.icon" class="icon" />
+    <span class="">{{ currentThemeOption.label }}</span>
+    <ng-icon name="lucideChevronDown" />
+  </button>
+
+  <ul
+    class="absolute bg-primary border-2 border-on-primary rounded-lg w-full transition-all drop-shadow-sm"
+    role="listbox"
+    [class.opacity-0]="!isOpen()"
+    [class.opacity-100]="isOpen()"
+    [class.pointer-events-none]="!isOpen()"
+  >
+    @for (theme of themes; track theme.value) {
+      <li class="hover:brightness-150 w-full transition-all flex flex-col">
+        <button
+          type="button"
+          class="px-4 py-2 flex items-center gap-2 cursor-pointer w-full"
+          [class.selected]="theme.value === themeService.currentTheme()"
+          (click)="select(theme.value)"
+          role="option"
+          [attr.aria-selected]="theme.value === themeService.currentTheme()"
+        >
+          <ng-icon [name]="theme.icon" />
+          <span>{{ theme.label }}</span>
+        </button>
+      </li>
+    }
+  </ul>
+</div>

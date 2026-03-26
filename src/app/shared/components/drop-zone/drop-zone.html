@@ -1,5 +1,5 @@
 <div
-  class="text-on-background relative flex flex-col items-center justify-center rounded-2xl border-2 border-dashed p-8 transition-all duration-300"
+  class="text-on-background relative flex flex-col gap-2 items-center justify-center rounded-2xl border-2 border-dashed p-8 transition-all duration-300"
   [class.border-primary]="isDragging()"
   [class.border-primary/40]="!isDragging()"
   [class.brightness-110]="isDragging()"
@@ -9,40 +9,19 @@
   (drop)="onDrop($event)"
 >
   <!-- Text -->
-  <p class="text-lg font-semibold">
-    @if (isDragging()) {
-      Drop files here
-    } @else {
-      Drag & drop files
-    }
-  </p>
+  <p class="text-lg font-semibold">Drop Files Here</p>
 
-  <p class="mt-1 text-sm">or</p>
+  <p class="">or</p>
 
   <!-- Browse Button -->
   <label
-    class="px-4 py-2 bg-primary text-on-primary rounded-lg"
+    class="px-4 py-2 bg-primary text-on-primary rounded-lg cursor-pointer"
     [class.pointer-events-none]="isProcessing()"
     [class.opacity-60]="isProcessing()"
     [class.cursor-wait]="isProcessing()"
   >
     @if (isProcessing()) {
-      <svg class="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
-        <circle
-          class="opacity-25"
-          cx="12"
-          cy="12"
-          r="10"
-          stroke="currentColor"
-          stroke-width="4"
-        ></circle>
-        <path
-          class="opacity-75"
-          fill="currentColor"
-          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-        ></path>
-      </svg>
-      Processing...
+      <app-loading text="Processing" />
     } @else {
       <ng-icon name="lucideFolderOpen" size="16" />
       Browse files
@@ -58,5 +37,5 @@
   </label>
 
   <!-- Supported Formats -->
-  <p class="mt-4 text-xs text-slate-400 dark:text-slate-500">Supported: PDF, JPG, PNG, WEBP</p>
+  <p class="text-sm font-medium opacity-50">Supported: PDF, JPG, PNG, WEBP</p>
 </div>

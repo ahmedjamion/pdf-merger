@@ -24,12 +24,18 @@ interface DrawPlacement {
 export class PdfComposer {
   private readonly document = inject(DOCUMENT);
 
-  async compose(files: ImportedFile[], pages: PageItem[], options: ExportOptions, maxPages?: number): Promise<Uint8Array> {
+  async compose(
+    files: ImportedFile[],
+    pages: PageItem[],
+    options: ExportOptions,
+    maxPages?: number,
+  ): Promise<Uint8Array> {
     const output = await PDFDocument.create();
     const filesById = new Map(files.map((file) => [file.id, file]));
     const pdfCache = new Map<string, PDFDocument>();
 
-    const pagesToCompose = typeof maxPages === 'number' ? pages.slice(0, Math.max(0, maxPages)) : pages;
+    const pagesToCompose =
+      typeof maxPages === 'number' ? pages.slice(0, Math.max(0, maxPages)) : pages;
 
     for (const pageItem of pagesToCompose) {
       const file = filesById.get(pageItem.sourceFileId);
@@ -48,7 +54,12 @@ export class PdfComposer {
 
         const sourcePage = source.getPage(pageItem.sourcePageIndex);
         const embeddedPage = await output.embedPage(sourcePage);
-        const pageSize = this.resolvePageSize(options.pageSize, embeddedPage.width, embeddedPage.height, options.orientation);
+        const pageSize = this.resolvePageSize(
+          options.pageSize,
+          embeddedPage.width,
+          embeddedPage.height,
+          options.orientation,
+        );
 
         const rotatedContentSize = this.rotatedContentSize(
           embeddedPage.width,
@@ -74,13 +85,23 @@ export class PdfComposer {
           rotate: degrees(placement.rotation),
         });
       } else {
-        const imagePayload = await this.prepareImage(file.file, file.type, options.quality, options.pageSize);
+        const imagePayload = await this.prepareImage(
+          file.file,
+          file.type,
+          options.quality,
+          options.pageSize,
+        );
         const embeddedImage =
           imagePayload.type === 'png'
             ? await output.embedPng(imagePayload.bytes)
             : await output.embedJpg(imagePayload.bytes);
 
-        const pageSize = this.resolvePageSize(options.pageSize, embeddedImage.width, embeddedImage.height, options.orientation);
+        const pageSize = this.resolvePageSize(
+          options.pageSize,
+          embeddedImage.width,
+          embeddedImage.height,
+          options.orientation,
+        );
 
         const rotatedContentSize = this.rotatedContentSize(
           embeddedImage.width,
@@ -187,11 +208,12 @@ export class PdfComposer {
     }
 
     const isLandscapeOriginal = originalWidth > originalHeight;
-    const isLandscape = orientation === 'auto' 
-      ? isLandscapeOriginal 
-      : orientation === 'landscape';
+    const isLandscape = orientation === 'auto' ? isLandscapeOriginal : orientation === 'landscape';
 
-    const sizeMap: Record<Exclude<ExportOptions['pageSize'], 'original'>, { width: number; height: number }> = {
+    const sizeMap: Record<
+      Exclude<ExportOptions['pageSize'], 'original'>,
+      { width: number; height: number }
+    > = {
       a3: { width: 841.89, height: 1190.55 },
       a4: { width: 595.28, height: 841.89 },
       a5: { width: 419.53, height: 595.28 },
@@ -256,7 +278,9 @@ export class PdfComposer {
     context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
     bitmap.close();
 
-    const jpegBlob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/jpeg', qualityValue));
+    const jpegBlob = await new Promise<Blob | null>((resolve) =>
+      canvas.toBlob(resolve, 'image/jpeg', qualityValue),
+    );
 
     if (!jpegBlob) {
       throw new Error('Unable to process image quality settings.');
@@ -300,4 +324,3 @@ export class PdfComposer {
     return new Response(file).arrayBuffer();
   }
 }
-

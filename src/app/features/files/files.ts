@@ -14,10 +14,11 @@ import {
   lucideGripVertical,
   lucideX,
 } from '@ng-icons/lucide';
+import { Button } from '../../shared/components/button/button';
 
 @Component({
   selector: 'app-files-page',
-  imports: [DragDropModule, AsyncPipe, PageHeader, Alert, NgIcon],
+  imports: [DragDropModule, AsyncPipe, PageHeader, Alert, NgIcon, Button],
   providers: [
     provideIcons({
       lucideGripVertical,

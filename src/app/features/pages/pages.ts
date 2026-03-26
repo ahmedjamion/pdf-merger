@@ -8,12 +8,30 @@ import { PdfPreview } from '../../core/services/pdf-preview/pdf-preview';
 import { PageHeader } from '../../shared/components/page-header/page-header';
 import { Alert } from '../../shared/components/alert/alert';
 import { provideIcons, NgIcon } from '@ng-icons/core';
-import { lucideGripVertical } from '@ng-icons/lucide';
+import {
+  lucideChevronLeft,
+  lucideChevronRight,
+  lucideGripVertical,
+  lucideRotateCw,
+  lucideRotateCcw,
+  lucideX,
+} from '@ng-icons/lucide';
+import { Loading } from '../../shared/components/loading/loading';
+import { Button } from '../../shared/components/button/button';
 
 @Component({
   selector: 'app-pages-page',
-  imports: [DragDropModule, AsyncPipe, PageHeader, Alert, NgIcon],
-  providers: [provideIcons({ lucideGripVertical })],
+  imports: [DragDropModule, AsyncPipe, PageHeader, Alert, NgIcon, Loading, Button],
+  providers: [
+    provideIcons({
+      lucideGripVertical,
+      lucideChevronRight,
+      lucideChevronLeft,
+      lucideRotateCw,
+      lucideRotateCcw,
+      lucideX,
+    }),
+  ],
   templateUrl: './pages.html',
   styleUrl: './pages.css',
 })

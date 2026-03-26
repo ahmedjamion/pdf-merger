@@ -37,30 +37,30 @@
       @for (page of pages(); track page.id; let index = $index) {
         <li
           cdkDrag
-          class="page-drag-item bg-surface text-on-surface rounded-xl overflow-clip"
+          class="page-drag-item bg-surface text-on-surface rounded-xl overflow-clip flex flex-col h-96"
           [cdkDragPreviewClass]="'page-drag-preview-card'"
         >
           <!-- Header -->
           <div class="flex items-center justify-between p-2">
             <div class="flex items-center gap-2">
-              <ng-icon name="lucideGripVertical" size="24" cdkDragHandle />
+              <ng-icon name="lucideGripVertical" size="24" cdkDragHandle class="cursor-grab" />
               <span class="text-sm font-semibold">Page {{ index + 1 }}</span>
             </div>
             <span class=""> {{ page.rotation }}° </span>
           </div>
 
           <!-- Preview Area -->
-          <div class="flex items-center justify-center">
+          <div class="flex items-center justify-center grow overflow-hidden">
             @if (page.sourceType === 'application/pdf') {
               @if (getPdfPagePreview(page) | async; as preview) {
                 <img
                   [src]="preview"
                   alt="PDF page preview"
-                  class="h-full w-full object-contain transition-transform duration-150"
+                  class="h-full w-full object-cover object-top transition-transform duration-150"
                   [style.transform]="'rotate(' + page.rotation + 'deg)'"
                 />
               } @else {
-                <div class="">Loading...</div>
+                <app-loading text="Loading Preview" />
               }
             } @else {
               <img
@@ -73,61 +73,61 @@
           </div>
 
           <!-- Source Info -->
-          <p class="truncate text-xs p-2" [title]="page.sourceFileName">
+          <p class="truncate p-2" [title]="page.sourceFileName">
             {{ page.sourceFileName }}
           </p>
 
           <!-- Action Buttons -->
-          <div class="grid grid-cols-2 gap-2">
+          <div class="flex justify-around p-2 gap-2">
             <button
               type="button"
-              class="inline-flex items-center justify-center gap-1"
+              class="inline-flex items-center justify-center cursor-pointer"
               [disabled]="index === 0"
               [class.opacity-40]="index === 0"
               [class.cursor-not-allowed]="index === 0"
               [attr.aria-label]="'Move page ' + (index + 1) + ' up'"
               (click)="moveUp(index)"
             >
-              Previous
+              <ng-icon name="lucideChevronLeft" size="24" />
             </button>
 
             <button
               type="button"
-              class="inline-flex items-center justify-center"
+              class="inline-flex items-center justify-center cursor-pointer"
               [disabled]="index === pages().length - 1"
               [class.opacity-40]="index === pages().length - 1"
               [class.cursor-not-allowed]="index === pages().length - 1"
               [attr.aria-label]="'Move page ' + (index + 1) + ' down'"
               (click)="moveDown(index)"
             >
-              Next
+              <ng-icon name="lucideChevronRight" size="24" />
             </button>
 
             <button
               type="button"
-              class="inline-flex items-center justify-center"
+              class="inline-flex items-center justify-center cursor-pointer"
               [attr.aria-label]="'Rotate page ' + (index + 1) + ' left'"
               (click)="rotateLeft(page.id)"
             >
-              Rotate Left
+              <ng-icon name="lucideRotateCcw" size="24" />
             </button>
 
             <button
               type="button"
-              class="inline-flex items-center justify-center"
+              class="inline-flex items-center justify-center cursor-pointer"
               [attr.aria-label]="'Rotate page ' + (index + 1) + ' right'"
               (click)="rotateRight(page.id)"
             >
-              Rotate Right
+              <ng-icon name="lucideRotateCw" size="24" />
             </button>
 
             <button
               type="button"
-              class="col-span-2 inline-flex items-center justify-center"
+              class="inline-flex items-center justify-center cursor-pointer"
               [attr.aria-label]="'Remove page ' + (index + 1)"
               (click)="removePage(page.id)"
             >
-              Remove
+              <ng-icon name="lucideX" size="24" />
             </button>
           </div>
 
@@ -169,10 +169,5 @@
     </ul>
   }
 
-  <button
-    (click)="goToExport()"
-    class="self-end px-4 py-2 bg-primary text-on-primary rounded-xl cursor-pointer"
-  >
-    Go To Export Page
-  </button>
+  <app-button (clicked)="goToExport()" text="Proceed to Export" />
 </section>

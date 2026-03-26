@@ -32,8 +32,8 @@
         (cdkDropListDropped)="onDrop($event)"
       >
         @for (file of files(); track file.id; let index = $index) {
-          <li cdkDrag class="drag-item flex flex-col p-2 bg-surface rounded-xl">
-            <div class="flex items-center gap-2">
+          <li cdkDrag class="drag-item flex flex-col bg-surface rounded-xl h-96">
+            <div class="flex items-center gap-2 p-2">
               <button
                 class="cursor-grab flex items-center justify-center"
                 cdkDragHandle
@@ -44,13 +44,13 @@
               <p class="truncate text-sm font-semibold">{{ index + 1 }}. {{ file.name }}</p>
             </div>
 
-            <div class="">
+            <div class="overflow-hidden">
               @if (file.type === 'application/pdf') {
                 @if (getPdfFilePreview(file) | async; as preview) {
                   <img
                     [src]="preview"
                     alt="PDF preview"
-                    class="h-full w-full object-contain rounded-lg"
+                    class="h-full w-full object-cover object-top"
                   />
                 } @else {
                   <p class="">Loading...</p>
@@ -59,7 +59,7 @@
                 <img
                   [src]="file.previewUrl"
                   alt="File preview"
-                  class="h-full w-full object-contain rounded-lg"
+                  class="h-full w-full object-cover object-top"
                 />
               }
             </div>
@@ -68,7 +68,7 @@
               {{ file.pageCount }} page{{ file.pageCount !== 1 ? 's' : '' }}
             </p>
 
-            <div class="flex items-center justify-around">
+            <div class="flex items-center justify-around p-2">
               <button
                 type="button"
                 class=""
@@ -132,12 +132,7 @@
         }
       </ul>
 
-      <button
-        (click)="goToPages()"
-        class="self-end px-4 py-2 bg-primary text-on-primary rounded-xl cursor-pointer"
-      >
-        Go To Page Arrangement
-      </button>
+      <app-button (clicked)="goToPages()" text="Proceed to Page Arrangement" />
     }
   </div>
 </section>

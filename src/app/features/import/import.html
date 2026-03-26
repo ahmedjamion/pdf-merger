@@ -40,7 +40,7 @@
       </div>
       <ul class="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         @for (file of files(); track file.id) {
-          <li>
+          <li class="">
             <app-file-card
               [file]="file"
               [index]="$index"
@@ -52,12 +52,7 @@
         }
       </ul>
 
-      <button
-        (click)="goToFiles()"
-        class="self-end px-4 py-2 bg-primary text-on-primary rounded-xl cursor-pointer"
-      >
-        Go To File Arrangement
-      </button>
+      <app-button (clicked)="goToFiles()" text="Proceed to File Arrangement" />
     }
   </section>
 

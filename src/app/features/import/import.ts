@@ -9,10 +9,11 @@ import { PageHeader } from '../../shared/components/page-header/page-header';
 import { DropZone } from '../../shared/components/drop-zone/drop-zone';
 import { FileCard } from '../../shared/components/file-card/file-card';
 import { Alert } from '../../shared/components/alert/alert';
+import { Button } from '../../shared/components/button/button';
 
 @Component({
   selector: 'app-import-page',
-  imports: [DecimalPipe, AsyncPipe, NgIcon, PageHeader, DropZone, FileCard, Alert],
+  imports: [DecimalPipe, AsyncPipe, NgIcon, PageHeader, DropZone, FileCard, Alert, Button],
   providers: [provideIcons({ lucideCircleAlert })],
   templateUrl: './import.html',
   styleUrl: './import.css',

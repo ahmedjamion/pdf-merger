@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
+import { ThemeSelector } from '../theme-selector/theme-selector';
 
 @Component({
   selector: 'app-header',
-  imports: [],
+  imports: [ThemeSelector],
   templateUrl: './header.html',
   styleUrl: './header.css',
 })
