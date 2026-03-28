@@ -1,7 +1,7 @@
 <div class="relative w-36">
   <button
     type="button"
-    class="px-4 py-2 w-full flex items-center justify-around gap-2 border-2 border-on-primary rounded-lg cursor-pointer"
+    class="px-4 py-2 w-full flex items-center gap-2 justify-end rounded-lg cursor-pointer"
     [class.open]="isOpen()"
     (click)="toggle()"
     aria-haspopup="listbox"
@@ -9,11 +9,10 @@
   >
     <ng-icon [name]="currentThemeOption.icon" class="icon" />
     <span class="">{{ currentThemeOption.label }}</span>
-    <ng-icon name="lucideChevronDown" />
   </button>
 
   <ul
-    class="absolute bg-primary border-2 border-on-primary rounded-lg w-full transition-all drop-shadow-sm"
+    class="absolute bg-primary border-2 border-on-primary rounded-lg w-full transition-all drop-shadow-sm z-50"
     role="listbox"
     [class.opacity-0]="!isOpen()"
     [class.opacity-100]="isOpen()"
